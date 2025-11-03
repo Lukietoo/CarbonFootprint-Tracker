@@ -1,6 +1,5 @@
 #  CarbonFootprint Tracker
 
-**Tagline:** *See your impact, change your footprint.*
 
 A Python-based web app that automatically estimates your carbon footprint from purchase data and offers actionable suggestions to reduce it.  
 This project combines sustainability data, NLP classification, and AI-generated insights to help users visualize and improve their environmental impact.
