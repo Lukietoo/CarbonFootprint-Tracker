@@ -39,7 +39,7 @@ Get AI-powered recommendations tailored to your spending habits.
 | Component | Technology |
 |-----------|-----------|
 | Backend | FastAPI (Python) |
-| Database | SQLite / PostgreSQL / Supabase |
+| Database | SQLite (default) / PostgreSQL (optional) |
 | NLP & AI | Pattern Matching / OpenAI API |
 | Carbon Data | Climatiq API + Local Estimates |
 | Visualization | Streamlit |
@@ -66,6 +66,11 @@ Get AI-powered recommendations tailored to your spending habits.
    ```bash
    chmod +x setup.sh
    ./setup.sh
+   ```
+
+   **Note**: The app uses SQLite by default. If you want to use PostgreSQL/Supabase instead, install additional dependencies:
+   ```bash
+   pip install -r requirements-postgres.txt
    ```
 
 3. **Configure environment variables** (optional)
