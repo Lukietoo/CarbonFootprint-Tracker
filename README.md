@@ -287,7 +287,23 @@ SECRET_KEY=your_secret_key
 ### Running Tests
 
 ```bash
-pytest tests/
+# Install development dependencies
+pip install -r requirements-dev.txt
+
+# Run all tests
+pytest
+
+# Run tests with coverage
+pytest --cov=backend --cov-report=html
+
+# Run specific test file
+pytest tests/test_classifier.py
+
+# Run tests in verbose mode
+pytest -v
+
+# Run only unit tests
+pytest -m unit
 ```
 
 ### Code Quality
@@ -296,11 +312,17 @@ pytest tests/
 # Format code
 black backend/ frontend/
 
+# Sort imports
+isort backend/ frontend/
+
 # Lint code
 flake8 backend/ frontend/
 
 # Type checking
 mypy backend/
+
+# Run all quality checks
+black backend/ frontend/ && isort backend/ frontend/ && flake8 backend/ frontend/
 ```
 
 ### Adding New Features
