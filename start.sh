@@ -12,6 +12,9 @@ if [ ! -f "backend/main.py" ]; then
     exit 1
 fi
 
+# Use python3 explicitly
+PYTHON=python3
+
 # Kill any existing instances
 echo "Stopping any existing instances..."
 pkill -f "uvicorn backend.main" 2>/dev/null
@@ -20,7 +23,7 @@ sleep 2
 
 # Start backend
 echo "Starting backend server..."
-python3 -m uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload > backend.log 2>&1 &
+$PYTHON -m uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload > backend.log 2>&1 &
 BACKEND_PID=$!
 echo "  Backend started (PID: $BACKEND_PID)"
 
