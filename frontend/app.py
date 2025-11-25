@@ -323,6 +323,14 @@ def load_sample_data():
 
 # Main app
 def main():
+    # VERSION MARKER - User should see this to confirm latest version is loaded
+    st.markdown(
+        '<div style="background: #4CAF50; color: white; padding: 10px; text-align: center; font-weight: bold; margin-bottom: 20px;">'
+        '✅ VERSION 2.0 - FOREST THEME WITH FIXED TEXT COLORS - If you see this, latest version is loaded!'
+        '</div>',
+        unsafe_allow_html=True
+    )
+
     # Header
     st.markdown('<div class="main-header">🌍 Carbon Footprint Tracker</div>', unsafe_allow_html=True)
     st.markdown(
