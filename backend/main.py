@@ -370,7 +370,12 @@ async def load_sample_data(
 ):
     """
     Load sample transaction data for demo purposes.
+    Clears existing data first.
     """
+    # Delete all existing transactions for this user
+    db.query(Transaction).filter(Transaction.user_id == user_id).delete()
+    db.commit()
+
     sample_transactions = transaction_parser.create_sample_data()
 
     results = []

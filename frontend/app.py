@@ -22,6 +22,10 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+# Clear Streamlit cache to force reload
+st.cache_data.clear()
+st.cache_resource.clear()
+
 # Custom CSS with Forest Theme
 st.markdown("""
     <style>
@@ -203,6 +207,24 @@ st.markdown("""
         background-color: rgba(76, 175, 80, 0.1);
         border-left: 5px solid #4CAF50;
         padding: 1rem;
+        border-radius: 10px;
+    }
+
+    /* Force black text in suggestion cards */
+    .suggestion-card h4,
+    .suggestion-card p,
+    .suggestion-card strong {
+        color: #1B5E20 !important;
+    }
+
+    /* Ensure all text is readable */
+    p, span, div {
+        color: #212121;
+    }
+
+    /* Fix plotly charts background */
+    .js-plotly-plot {
+        background-color: white;
         border-radius: 10px;
     }
     </style>
