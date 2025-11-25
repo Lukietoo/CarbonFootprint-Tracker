@@ -29,12 +29,39 @@ st.cache_resource.clear()
 # Custom CSS with Forest Theme
 st.markdown("""
     <style>
-    /* Forest Background */
+    /* Forest Background - CSS only (no external images) */
     .stApp {
-        background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)),
-                    url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1920&q=80') center center;
-        background-size: cover;
-        background-attachment: fixed;
+        background: linear-gradient(135deg,
+            #1a4d2e 0%,
+            #2d5a3d 25%,
+            #3d6b4d 50%,
+            #2d5a3d 75%,
+            #1a4d2e 100%);
+        background-size: 400% 400%;
+        animation: forestGradient 15s ease infinite;
+        position: relative;
+    }
+
+    @keyframes forestGradient {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
+    /* Add texture overlay */
+    .stApp::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background:
+            radial-gradient(circle at 20% 50%, rgba(76, 175, 80, 0.1) 0%, transparent 50%),
+            radial-gradient(circle at 80% 20%, rgba(139, 195, 74, 0.1) 0%, transparent 50%),
+            radial-gradient(circle at 40% 80%, rgba(56, 142, 60, 0.1) 0%, transparent 50%);
+        pointer-events: none;
+        z-index: 0;
     }
 
     /* Main content area with semi-transparent background */
@@ -44,6 +71,8 @@ st.markdown("""
         padding: 2rem;
         backdrop-filter: blur(10px);
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        position: relative;
+        z-index: 1;
     }
 
     /* Sidebar with forest theme */
@@ -52,6 +81,8 @@ st.markdown("""
             rgba(46, 125, 50, 0.95) 0%,
             rgba(27, 94, 32, 0.95) 100%);
         backdrop-filter: blur(10px);
+        position: relative;
+        z-index: 1;
     }
 
     section[data-testid="stSidebar"] * {
