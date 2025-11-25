@@ -26,6 +26,262 @@ st.set_page_config(
 st.cache_data.clear()
 st.cache_resource.clear()
 
+# TEMPORARILY DISABLED CSS FOR TESTING - If you see content now, CSS was the issue
+"""
+st.markdown("DISABLED CSS - TESTING")
+"""
+
+# Custom CSS with Forest Theme
+st.markdown('''
+    <style>
+    /* Forest Background - Simple gradient, no overlays */
+    .stApp {
+        background: linear-gradient(135deg,
+            #1a4d2e 0%,
+            #2d5a3d 25%,
+            #3d6b4d 50%,
+            #2d5a3d 75%,
+            #1a4d2e 100%);
+        background-size: 400% 400%;
+        animation: forestGradient 15s ease infinite;
+    }
+
+    @keyframes forestGradient {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
+    /* Main content area - MUST be visible */
+    .main .block-container {
+        background-color: white !important;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        position: relative;
+        z-index: 100;
+    }
+
+    /* Sidebar with forest theme */
+    section[data-testid="stSidebar"] {
+        background: linear-gradient(180deg,
+            rgba(46, 125, 50, 0.98) 0%,
+            rgba(27, 94, 32, 0.98) 100%) !important;
+        position: relative;
+        z-index: 100;
+    }
+
+    section[data-testid="stSidebar"] * {
+        color: white !important;
+    }
+
+    section[data-testid="stSidebar"] .stButton button {
+        background-color: rgba(255, 255, 255, 0.2);
+        color: white !important;
+        border: 2px solid rgba(255, 255, 255, 0.5);
+        border-radius: 10px;
+        transition: all 0.3s ease;
+    }
+
+    section[data-testid="stSidebar"] .stButton button:hover {
+        background-color: rgba(255, 255, 255, 0.3);
+        border-color: white;
+        transform: scale(1.05);
+    }
+
+    /* Header - SOLID color for maximum visibility */
+    .main-header {
+        font-size: 3.5rem;
+        font-weight: bold;
+        color: #1B5E20 !important;
+        text-align: center;
+        margin-bottom: 1rem;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Metric cards with nature theme */
+    .metric-card {
+        background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+        padding: 1.5rem;
+        border-radius: 15px;
+        margin: 0.5rem 0;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        border-left: 5px solid #4CAF50;
+        transition: transform 0.3s ease;
+    }
+
+    .metric-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Suggestion cards */
+    .suggestion-card {
+        background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%) !important;
+        padding: 1.5rem;
+        border-radius: 15px;
+        margin: 1rem 0;
+        border-left: 6px solid #4CAF50;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+    }
+
+    .suggestion-card:hover {
+        transform: translateX(10px);
+        box-shadow: 0 6px 20px rgba(76, 175, 80, 0.3);
+    }
+
+    /* FORCE dark text in suggestion cards - CRITICAL */
+    .suggestion-card,
+    .suggestion-card *,
+    .suggestion-card h1,
+    .suggestion-card h2,
+    .suggestion-card h3,
+    .suggestion-card h4,
+    .suggestion-card h5,
+    .suggestion-card h6,
+    .suggestion-card p,
+    .suggestion-card span,
+    .suggestion-card div,
+    .suggestion-card strong,
+    .suggestion-card b,
+    .suggestion-card em,
+    .suggestion-card i,
+    .suggestion-card a {
+        color: #1B5E20 !important;
+    }
+
+    /* Streamlit metrics */
+    div[data-testid="stMetricValue"] {
+        font-size: 2rem;
+        color: #1B5E20;
+        font-weight: bold;
+    }
+
+    /* Headers */
+    h1, h2, h3 {
+        color: #1B5E20 !important;
+    }
+
+    /* Info boxes */
+    .stAlert {
+        background-color: rgba(232, 245, 233, 0.9);
+        border-left: 5px solid #4CAF50;
+        border-radius: 10px;
+    }
+
+    /* Dataframes */
+    .dataframe {
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Buttons */
+    .stButton button {
+        background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        padding: 0.75rem 2rem;
+        font-weight: bold;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+    }
+
+    .stButton button:hover {
+        background: linear-gradient(135deg, #388E3C 0%, #4CAF50 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+    }
+
+    /* File uploader */
+    .uploadedFile {
+        background-color: rgba(232, 245, 233, 0.5);
+        border-radius: 10px;
+    }
+
+    /* Tabs */
+    .stTabs [data-baseweb="tab-list"] {
+        background-color: rgba(232, 245, 233, 0.5);
+        border-radius: 10px;
+    }
+
+    .stTabs [data-baseweb="tab"] {
+        color: #1B5E20;
+        font-weight: 600;
+    }
+
+    .stTabs [aria-selected="true"] {
+        background-color: #4CAF50;
+        color: white !important;
+    }
+
+    /* Divider */
+    hr {
+        border-color: #4CAF50;
+        opacity: 0.3;
+    }
+
+    /* Radio buttons */
+    .stRadio > label {
+        color: white !important;
+        font-weight: 600;
+    }
+
+    /* Text inputs */
+    .stTextInput input, .stNumberInput input, .stDateInput input {
+        border-radius: 10px;
+        border: 2px solid #4CAF50;
+    }
+
+    /* Success/Info messages */
+    .success {
+        background-color: rgba(76, 175, 80, 0.1);
+        border-left: 5px solid #4CAF50;
+        padding: 1rem;
+        border-radius: 10px;
+    }
+
+    /* FORCE all Streamlit text to be dark and visible */
+    .stMarkdown, .stMarkdown p, .stMarkdown span,
+    .stText, .stCaption,
+    h1, h2, h3, h4, h5, h6,
+    p, label,
+    .stSelectbox label, .stRadio label,
+    [data-testid="stMarkdownContainer"] p,
+    [data-testid="stText"] {
+        color: #000000 !important;
+    }
+
+    /* Sidebar text should stay white */
+    section[data-testid="stSidebar"] h1,
+    section[data-testid="stSidebar"] h2,
+    section[data-testid="stSidebar"] h3,
+    section[data-testid="stSidebar"] p,
+    section[data-testid="stSidebar"] label,
+    section[data-testid="stSidebar"] span,
+    section[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] {
+        color: white !important;
+    }
+
+    /* Metric values should be very visible */
+    [data-testid="stMetricLabel"],
+    [data-testid="stMetricValue"],
+    [data-testid="stMetricDelta"] {
+        color: #000000 !important;
+    }
+
+    /* Fix plotly charts background */
+    .js-plotly-plot {
+        background-color: white;
+        border-radius: 10px;
+    }
+    </style>
+''', unsafe_allow_html=True)
+"""
+
+
 # Helper functions
 def call_api(endpoint, method="GET", data=None, files=None):
     """Make API calls to the backend."""
