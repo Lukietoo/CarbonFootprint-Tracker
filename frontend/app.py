@@ -103,18 +103,14 @@ st.markdown("""
         transform: scale(1.05);
     }
 
-    /* Header */
+    /* Header - SOLID color for maximum visibility */
     .main-header {
         font-size: 3.5rem;
         font-weight: bold;
-        color: #1B5E20;
+        color: #1B5E20 !important;
         text-align: center;
         margin-bottom: 1rem;
-        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-        background: linear-gradient(135deg, #2E7D32, #66BB6A);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
     }
 
     /* Metric cards with nature theme */
@@ -261,15 +257,44 @@ st.markdown("""
         border-radius: 10px;
     }
 
-    /* Ensure all text is readable throughout app */
-    p, span, div, label {
-        color: #212121 !important;
+    /* FORCE all Streamlit text to be dark and visible */
+    .stMarkdown, .stMarkdown p, .stMarkdown span,
+    .stText, .stCaption,
+    h1, h2, h3, h4, h5, h6,
+    p, label,
+    .stSelectbox label, .stRadio label,
+    [data-testid="stMarkdownContainer"] p,
+    [data-testid="stText"] {
+        color: #000000 !important;
+    }
+
+    /* Sidebar text should stay white */
+    section[data-testid="stSidebar"] h1,
+    section[data-testid="stSidebar"] h2,
+    section[data-testid="stSidebar"] h3,
+    section[data-testid="stSidebar"] p,
+    section[data-testid="stSidebar"] label,
+    section[data-testid="stSidebar"] span,
+    section[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] {
+        color: white !important;
+    }
+
+    /* Metric values should be very visible */
+    [data-testid="stMetricLabel"],
+    [data-testid="stMetricValue"],
+    [data-testid="stMetricDelta"] {
+        color: #000000 !important;
     }
 
     /* Fix plotly charts background */
     .js-plotly-plot {
         background-color: white;
         border-radius: 10px;
+    }
+
+    /* Ensure main content container is VERY visible */
+    .main .block-container {
+        background-color: rgba(255, 255, 255, 0.98) !important;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -338,8 +363,10 @@ def reset_all_data():
 def main():
     # VERSION MARKER - User should see this to confirm latest version is loaded
     st.markdown(
-        '<div style="background: #4CAF50; color: white; padding: 10px; text-align: center; font-weight: bold; margin-bottom: 20px;">'
-        '✅ VERSION 2.0 - FOREST THEME WITH FIXED TEXT COLORS - If you see this, latest version is loaded!'
+        '<div style="background: #FF6B35; color: white; padding: 15px; text-align: center; font-weight: bold; '
+        'margin-bottom: 20px; font-size: 18px; border-radius: 10px; border: 3px solid white; '
+        'box-shadow: 0 4px 8px rgba(0,0,0,0.3); z-index: 9999; position: relative;">'
+        '✅ VERSION 3.0 - TEXT VISIBILITY FIX - You should see ALL text clearly now!'
         '</div>',
         unsafe_allow_html=True
     )
