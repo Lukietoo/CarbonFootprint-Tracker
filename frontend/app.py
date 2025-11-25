@@ -321,6 +321,19 @@ def load_sample_data():
     return call_api(f"/api/sample-data?user_id={USER_ID}", method="POST")
 
 
+def reset_all_data():
+    """Delete all transaction data."""
+    url = f"{API_BASE_URL}/api/reset-data?user_id={USER_ID}"
+    try:
+        response = requests.delete(url)
+        if response.status_code == 200:
+            return response.json()
+        return None
+    except Exception as e:
+        st.error(f"Error resetting data: {str(e)}")
+        return None
+
+
 # Main app
 def main():
     # VERSION MARKER - User should see this to confirm latest version is loaded
@@ -354,6 +367,14 @@ def main():
                 result = load_sample_data()
                 if result:
                     st.success("Sample data loaded!")
+                    st.rerun()
+
+        # Reset data button
+        if st.button("🗑️ Reset All Data", use_container_width=True, type="secondary"):
+            with st.spinner("Deleting all data..."):
+                result = reset_all_data()
+                if result:
+                    st.success(f"✅ {result['message']}")
                     st.rerun()
 
         st.divider()

@@ -420,6 +420,28 @@ async def load_sample_data(
     }
 
 
+# Reset all data endpoint
+@app.delete("/api/reset-data")
+async def reset_all_data(
+    user_id: str = "default_user",
+    db: Session = Depends(get_db)
+):
+    """
+    Delete all transaction data for a user.
+    """
+    # Delete all transactions for this user
+    deleted_count = db.query(Transaction).filter(Transaction.user_id == user_id).delete()
+    db.commit()
+
+    # Update user profile to reset carbon total
+    await update_user_carbon_total(user_id, db)
+
+    return {
+        "message": f"Deleted {deleted_count} transactions",
+        "deleted_count": deleted_count
+    }
+
+
 # Helper functions
 async def update_user_carbon_total(user_id: str, db: Session):
     """Update user's total carbon footprint."""
