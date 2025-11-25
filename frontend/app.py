@@ -26,8 +26,13 @@ st.set_page_config(
 st.cache_data.clear()
 st.cache_resource.clear()
 
+# TEMPORARILY DISABLED CSS FOR TESTING - If you see content now, CSS was the issue
+"""
+st.markdown("DISABLED CSS - TESTING")
+"""
+
 # Custom CSS with Forest Theme
-st.markdown("""
+st.markdown('''
     <style>
     /* Forest Background - Simple gradient, no overlays */
     .stApp {
@@ -273,7 +278,8 @@ st.markdown("""
         border-radius: 10px;
     }
     </style>
-""", unsafe_allow_html=True)
+''', unsafe_allow_html=True)
+"""
 
 
 # Helper functions
