@@ -22,28 +22,188 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS
+# Custom CSS with Forest Theme
 st.markdown("""
     <style>
+    /* Forest Background */
+    .stApp {
+        background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)),
+                    url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1920&q=80') center center;
+        background-size: cover;
+        background-attachment: fixed;
+    }
+
+    /* Main content area with semi-transparent background */
+    .main .block-container {
+        background-color: rgba(255, 255, 255, 0.95);
+        border-radius: 15px;
+        padding: 2rem;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Sidebar with forest theme */
+    section[data-testid="stSidebar"] {
+        background: linear-gradient(180deg,
+            rgba(46, 125, 50, 0.95) 0%,
+            rgba(27, 94, 32, 0.95) 100%);
+        backdrop-filter: blur(10px);
+    }
+
+    section[data-testid="stSidebar"] * {
+        color: white !important;
+    }
+
+    section[data-testid="stSidebar"] .stButton button {
+        background-color: rgba(255, 255, 255, 0.2);
+        color: white !important;
+        border: 2px solid rgba(255, 255, 255, 0.5);
+        border-radius: 10px;
+        transition: all 0.3s ease;
+    }
+
+    section[data-testid="stSidebar"] .stButton button:hover {
+        background-color: rgba(255, 255, 255, 0.3);
+        border-color: white;
+        transform: scale(1.05);
+    }
+
+    /* Header */
     .main-header {
-        font-size: 3rem;
+        font-size: 3.5rem;
         font-weight: bold;
-        color: #2E7D32;
+        color: #1B5E20;
         text-align: center;
         margin-bottom: 1rem;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        background: linear-gradient(135deg, #2E7D32, #66BB6A);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
     }
+
+    /* Metric cards with nature theme */
     .metric-card {
-        background-color: #f0f2f6;
-        padding: 1rem;
-        border-radius: 0.5rem;
+        background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+        padding: 1.5rem;
+        border-radius: 15px;
         margin: 0.5rem 0;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        border-left: 5px solid #4CAF50;
+        transition: transform 0.3s ease;
     }
+
+    .metric-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Suggestion cards */
     .suggestion-card {
-        background-color: #E8F5E9;
+        background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+        padding: 1.5rem;
+        border-radius: 15px;
+        margin: 1rem 0;
+        border-left: 6px solid #4CAF50;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+    }
+
+    .suggestion-card:hover {
+        transform: translateX(10px);
+        box-shadow: 0 6px 20px rgba(76, 175, 80, 0.3);
+    }
+
+    /* Streamlit metrics */
+    div[data-testid="stMetricValue"] {
+        font-size: 2rem;
+        color: #1B5E20;
+        font-weight: bold;
+    }
+
+    /* Headers */
+    h1, h2, h3 {
+        color: #1B5E20 !important;
+    }
+
+    /* Info boxes */
+    .stAlert {
+        background-color: rgba(232, 245, 233, 0.9);
+        border-left: 5px solid #4CAF50;
+        border-radius: 10px;
+    }
+
+    /* Dataframes */
+    .dataframe {
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Buttons */
+    .stButton button {
+        background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        padding: 0.75rem 2rem;
+        font-weight: bold;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+    }
+
+    .stButton button:hover {
+        background: linear-gradient(135deg, #388E3C 0%, #4CAF50 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+    }
+
+    /* File uploader */
+    .uploadedFile {
+        background-color: rgba(232, 245, 233, 0.5);
+        border-radius: 10px;
+    }
+
+    /* Tabs */
+    .stTabs [data-baseweb="tab-list"] {
+        background-color: rgba(232, 245, 233, 0.5);
+        border-radius: 10px;
+    }
+
+    .stTabs [data-baseweb="tab"] {
+        color: #1B5E20;
+        font-weight: 600;
+    }
+
+    .stTabs [aria-selected="true"] {
+        background-color: #4CAF50;
+        color: white !important;
+    }
+
+    /* Divider */
+    hr {
+        border-color: #4CAF50;
+        opacity: 0.3;
+    }
+
+    /* Radio buttons */
+    .stRadio > label {
+        color: white !important;
+        font-weight: 600;
+    }
+
+    /* Text inputs */
+    .stTextInput input, .stNumberInput input, .stDateInput input {
+        border-radius: 10px;
+        border: 2px solid #4CAF50;
+    }
+
+    /* Success/Info messages */
+    .success {
+        background-color: rgba(76, 175, 80, 0.1);
+        border-left: 5px solid #4CAF50;
         padding: 1rem;
-        border-radius: 0.5rem;
-        margin: 0.5rem 0;
-        border-left: 4px solid #4CAF50;
+        border-radius: 10px;
     }
     </style>
 """, unsafe_allow_html=True)
