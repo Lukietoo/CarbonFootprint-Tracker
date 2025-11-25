@@ -135,7 +135,7 @@ st.markdown("""
 
     /* Suggestion cards */
     .suggestion-card {
-        background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+        background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%) !important;
         padding: 1.5rem;
         border-radius: 15px;
         margin: 1rem 0;
@@ -147,6 +147,26 @@ st.markdown("""
     .suggestion-card:hover {
         transform: translateX(10px);
         box-shadow: 0 6px 20px rgba(76, 175, 80, 0.3);
+    }
+
+    /* FORCE dark text in suggestion cards - CRITICAL */
+    .suggestion-card,
+    .suggestion-card *,
+    .suggestion-card h1,
+    .suggestion-card h2,
+    .suggestion-card h3,
+    .suggestion-card h4,
+    .suggestion-card h5,
+    .suggestion-card h6,
+    .suggestion-card p,
+    .suggestion-card span,
+    .suggestion-card div,
+    .suggestion-card strong,
+    .suggestion-card b,
+    .suggestion-card em,
+    .suggestion-card i,
+    .suggestion-card a {
+        color: #1B5E20 !important;
     }
 
     /* Streamlit metrics */
@@ -241,16 +261,9 @@ st.markdown("""
         border-radius: 10px;
     }
 
-    /* Force black text in suggestion cards */
-    .suggestion-card h4,
-    .suggestion-card p,
-    .suggestion-card strong {
-        color: #1B5E20 !important;
-    }
-
-    /* Ensure all text is readable */
-    p, span, div {
-        color: #212121;
+    /* Ensure all text is readable throughout app */
+    p, span, div, label {
+        color: #212121 !important;
     }
 
     /* Fix plotly charts background */
@@ -639,14 +652,14 @@ def show_suggestions():
         }
         difficulty_icon = difficulty_colors.get(suggestion['difficulty'], "⚪")
 
-        # Create suggestion card
+        # Create suggestion card with inline styles to FORCE dark text
         st.markdown(f"""
-        <div class="suggestion-card">
-            <h4>{i}. {suggestion['suggestion']}</h4>
-            <p>
-                <strong>Potential Reduction:</strong> {suggestion['reduction_kg']:.2f} kg CO₂<br>
-                <strong>Difficulty:</strong> {difficulty_icon} {suggestion['difficulty'].title()}<br>
-                <strong>Category:</strong> {suggestion['category'].replace('_', ' ').title()}
+        <div class="suggestion-card" style="background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%) !important;">
+            <h4 style="color: #1B5E20 !important; margin: 0 0 10px 0;">{i}. {suggestion['suggestion']}</h4>
+            <p style="color: #1B5E20 !important; margin: 0;">
+                <strong style="color: #1B5E20 !important;">Potential Reduction:</strong> <span style="color: #1B5E20 !important;">{suggestion['reduction_kg']:.2f} kg CO₂</span><br>
+                <strong style="color: #1B5E20 !important;">Difficulty:</strong> <span style="color: #1B5E20 !important;">{difficulty_icon} {suggestion['difficulty'].title()}</span><br>
+                <strong style="color: #1B5E20 !important;">Category:</strong> <span style="color: #1B5E20 !important;">{suggestion['category'].replace('_', ' ').title()}</span>
             </p>
         </div>
         """, unsafe_allow_html=True)
