@@ -29,7 +29,7 @@ st.cache_resource.clear()
 # Custom CSS with Forest Theme
 st.markdown("""
     <style>
-    /* Forest Background - CSS only (no external images) */
+    /* Forest Background - Simple gradient, no overlays */
     .stApp {
         background: linear-gradient(135deg,
             #1a4d2e 0%,
@@ -39,7 +39,6 @@ st.markdown("""
             #1a4d2e 100%);
         background-size: 400% 400%;
         animation: forestGradient 15s ease infinite;
-        position: relative;
     }
 
     @keyframes forestGradient {
@@ -48,41 +47,23 @@ st.markdown("""
         100% { background-position: 0% 50%; }
     }
 
-    /* Add texture overlay */
-    .stApp::before {
-        content: "";
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background:
-            radial-gradient(circle at 20% 50%, rgba(76, 175, 80, 0.1) 0%, transparent 50%),
-            radial-gradient(circle at 80% 20%, rgba(139, 195, 74, 0.1) 0%, transparent 50%),
-            radial-gradient(circle at 40% 80%, rgba(56, 142, 60, 0.1) 0%, transparent 50%);
-        pointer-events: none;
-        z-index: 0;
-    }
-
-    /* Main content area with semi-transparent background */
+    /* Main content area - MUST be visible */
     .main .block-container {
-        background-color: rgba(255, 255, 255, 0.95);
+        background-color: white !important;
         border-radius: 15px;
         padding: 2rem;
-        backdrop-filter: blur(10px);
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
         position: relative;
-        z-index: 1;
+        z-index: 100;
     }
 
     /* Sidebar with forest theme */
     section[data-testid="stSidebar"] {
         background: linear-gradient(180deg,
-            rgba(46, 125, 50, 0.95) 0%,
-            rgba(27, 94, 32, 0.95) 100%);
-        backdrop-filter: blur(10px);
+            rgba(46, 125, 50, 0.98) 0%,
+            rgba(27, 94, 32, 0.98) 100%) !important;
         position: relative;
-        z-index: 1;
+        z-index: 100;
     }
 
     section[data-testid="stSidebar"] * {
@@ -291,11 +272,6 @@ st.markdown("""
         background-color: white;
         border-radius: 10px;
     }
-
-    /* Ensure main content container is VERY visible */
-    .main .block-container {
-        background-color: rgba(255, 255, 255, 0.98) !important;
-    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -363,10 +339,10 @@ def reset_all_data():
 def main():
     # VERSION MARKER - User should see this to confirm latest version is loaded
     st.markdown(
-        '<div style="background: #FF6B35; color: white; padding: 15px; text-align: center; font-weight: bold; '
-        'margin-bottom: 20px; font-size: 18px; border-radius: 10px; border: 3px solid white; '
-        'box-shadow: 0 4px 8px rgba(0,0,0,0.3); z-index: 9999; position: relative;">'
-        '✅ VERSION 3.0 - TEXT VISIBILITY FIX - You should see ALL text clearly now!'
+        '<div style="background: #FF1744; color: white; padding: 20px; text-align: center; font-weight: bold; '
+        'margin-bottom: 20px; font-size: 20px; border-radius: 10px; border: 4px solid #FFF; '
+        'box-shadow: 0 8px 16px rgba(0,0,0,0.4); z-index: 9999; position: relative;">'
+        '🔥 VERSION 4.0 - CRITICAL FIX - Content & Dashboard Now Visible!'
         '</div>',
         unsafe_allow_html=True
     )
