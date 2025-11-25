@@ -1,0 +1,7 @@
+# PostgreSQL/Supabase dependencies (optional)
+# Only install if you plan to use PostgreSQL instead of SQLite
+
+# Install with: pip install -r requirements-postgres.txt
+
+psycopg2-binary==2.9.9
+supabase==2.0.3

@@ -241,7 +241,7 @@ class SuggestionGenerator:
         current_suggestion = {}
         for line in lines:
             line = line.strip()
-            if line.startswith(('-', '*', '•')) or line[0].isdigit():
+            if line and (line.startswith(('-', '*', '•')) or line[0].isdigit()):
                 if current_suggestion:
                     suggestions.append(current_suggestion)
                 current_suggestion = {

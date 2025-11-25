@@ -39,7 +39,7 @@ Get AI-powered recommendations tailored to your spending habits.
 | Component | Technology |
 |-----------|-----------|
 | Backend | FastAPI (Python) |
-| Database | SQLite / PostgreSQL / Supabase |
+| Database | SQLite (default) / PostgreSQL (optional) |
 | NLP & AI | Pattern Matching / OpenAI API |
 | Carbon Data | Climatiq API + Local Estimates |
 | Visualization | Streamlit |
@@ -66,6 +66,11 @@ Get AI-powered recommendations tailored to your spending habits.
    ```bash
    chmod +x setup.sh
    ./setup.sh
+   ```
+
+   **Note**: The app uses SQLite by default. If you want to use PostgreSQL/Supabase instead, install additional dependencies:
+   ```bash
+   pip install -r requirements-postgres.txt
    ```
 
 3. **Configure environment variables** (optional)
@@ -287,7 +292,23 @@ SECRET_KEY=your_secret_key
 ### Running Tests
 
 ```bash
-pytest tests/
+# Install development dependencies
+pip install -r requirements-dev.txt
+
+# Run all tests
+pytest
+
+# Run tests with coverage
+pytest --cov=backend --cov-report=html
+
+# Run specific test file
+pytest tests/test_classifier.py
+
+# Run tests in verbose mode
+pytest -v
+
+# Run only unit tests
+pytest -m unit
 ```
 
 ### Code Quality
@@ -296,11 +317,17 @@ pytest tests/
 # Format code
 black backend/ frontend/
 
+# Sort imports
+isort backend/ frontend/
+
 # Lint code
 flake8 backend/ frontend/
 
 # Type checking
 mypy backend/
+
+# Run all quality checks
+black backend/ frontend/ && isort backend/ frontend/ && flake8 backend/ frontend/
 ```
 
 ### Adding New Features

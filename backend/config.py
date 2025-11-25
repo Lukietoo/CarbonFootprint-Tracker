@@ -8,7 +8,7 @@ from typing import Optional
 class Settings(BaseSettings):
     """Application settings loaded from environment variables."""
 
-    # Supabase
+    # Supabase (Optional - only if using PostgreSQL)
     supabase_url: str = ""
     supabase_key: str = ""
 
