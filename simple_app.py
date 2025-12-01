@@ -406,6 +406,11 @@ st.set_page_config(
 # Enhanced CSS
 st.markdown("""
     <style>
+    /* Base font settings with fallbacks for compatibility */
+    * {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol" !important;
+    }
+
     .main {
         background-color: #f0f8f0;
     }
@@ -417,12 +422,24 @@ st.markdown("""
     /* Fix metric text visibility */
     [data-testid="stMetricValue"] {
         color: #1B5E20 !important;
+        font-variant-numeric: tabular-nums;
+        line-height: 1.2;
     }
     [data-testid="stMetricLabel"] {
         color: #333333 !important;
+        line-height: 1.4;
     }
     [data-testid="stMetricDelta"] {
         color: #666666 !important;
+        line-height: 1.3;
+    }
+    /* Ensure emojis render properly */
+    h1, h2, h3, h4, .stButton button {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol" !important;
+    }
+    /* Code blocks should always be monospace */
+    code, pre, .stCodeBlock {
+        font-family: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace !important;
     }
     /* Suggestion cards */
     .suggestion-card {
@@ -436,10 +453,17 @@ st.markdown("""
     .suggestion-card h4 {
         color: #1B5E20;
         margin-bottom: 0.5rem;
+        line-height: 1.4;
     }
     .suggestion-card p {
         color: #333;
         margin: 0.3rem 0;
+        line-height: 1.6;
+    }
+    /* Fix text in buttons and inputs */
+    .stButton button, .stTextInput input, .stNumberInput input, .stSelectbox select {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+        line-height: 1.5;
     }
     /* Budget bar */
     .budget-bar {
