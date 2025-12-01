@@ -8,10 +8,39 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Dict, List, Tuple
 import json
-import base64
+
+
+# ===========================
+# CONSTANTS
+# ===========================
+
+# Monthly carbon benchmarks (kg CO₂ per month)
+CARBON_BENCHMARKS = {
+    "us_avg": 1333,      # 16 tons/year ÷ 12 months
+    "world_avg": 417,    # 5 tons/year ÷ 12 months
+    "paris_target": 167  # 2 tons/year ÷ 12 months (Paris Agreement)
+}
+
+# Chart colors
+CHART_COLORS = {
+    "your_footprint": "#4CAF50",
+    "us_avg": "#FF9800",
+    "world_avg": "#2196F3",
+    "paris_target": "#9C27B0",
+    "green_sequential": px.colors.sequential.Greens_r,
+    "red_scale": "Reds"
+}
+
+# Environmental equivalents (for reduction impact)
+ENVIRONMENTAL_FACTORS = {
+    "tree_co2_per_year": 21.77,    # kg CO₂ absorbed per tree per year
+    "car_co2_per_mile": 0.404,     # kg CO₂ per mile driven
+    "phone_charge_per_year": 8.3   # kg CO₂ to charge phone for 1 year
+}
+
 
 # ===========================
 # Data Storage (In-Memory)
@@ -26,7 +55,7 @@ if 'transactions' not in st.session_state:
 # ===========================
 
 class SimpleClassifier:
-    """Simple keyword-based transaction classifier."""
+    """Simple keyword-based transaction classifier with carbon estimation."""
 
     CATEGORIES = {
         "food_meat": {
@@ -81,14 +110,18 @@ class SimpleClassifier:
 
     def classify(self, description: str, amount: float) -> Tuple[str, float]:
         """
-        Classify transaction and estimate carbon.
+        Classify transaction and estimate carbon emissions.
+
+        Args:
+            description: Transaction description text
+            amount: Purchase amount in USD
 
         Returns:
-            (category, carbon_kg rounded to 2 decimal places)
+            Tuple of (category_name, carbon_kg rounded to 2 decimals)
         """
         description_lower = description.lower()
 
-        # Find matching category
+        # Find matching category by keyword
         for category, data in self.CATEGORIES.items():
             if category == "other":
                 continue
@@ -97,7 +130,7 @@ class SimpleClassifier:
                     carbon_kg = round(amount * data["carbon_per_dollar"], 2)
                     return category, carbon_kg
 
-        # Default to "other"
+        # Default to "other" category
         carbon_kg = round(amount * self.CATEGORIES["other"]["carbon_per_dollar"], 2)
         return "other", carbon_kg
 
@@ -106,11 +139,14 @@ class SimpleClassifier:
 # Sample Data Generator
 # ===========================
 
-def get_sample_datasets():
-    """Get multiple sample datasets with different carbon profiles spanning multiple months."""
-    classifier = SimpleClassifier()
+def get_sample_datasets() -> Dict[str, List[Dict]]:
+    """
+    Generate sample datasets with different carbon profiles spanning 11 months.
 
-    datasets = {
+    Returns:
+        Dictionary mapping profile names to lists of transaction dictionaries
+    """
+    return {
         "🌱 Eco-Conscious (Low Carbon)": [
             # January 2025
             {"date": "2025-01-05", "description": "Whole Foods - Organic Vegetables", "amount": 45.00},
@@ -261,21 +297,30 @@ def get_sample_datasets():
         ]
     }
 
-    return datasets
-
 
 # ===========================
 # Enhanced Suggestion Generator
 # ===========================
 
 def generate_enhanced_suggestions(transactions: List[Dict]) -> List[Dict]:
-    """Generate detailed carbon reduction suggestions with alternatives."""
+    """
+    Generate detailed carbon reduction suggestions based on transaction patterns.
+
+    Args:
+        transactions: List of transaction dictionaries
+
+    Returns:
+        List of suggestion dictionaries with reduction strategies
+    """
     if not transactions:
         return [{
+            "icon": "💡",
             "title": "Start Tracking",
             "description": "Add your purchases to get personalized suggestions!",
+            "alternative": "sustainable choices",
             "reduction_kg": 0,
-            "difficulty": "easy"
+            "difficulty": "easy",
+            "category": "general"
         }]
 
     # Calculate category totals
@@ -284,13 +329,13 @@ def generate_enhanced_suggestions(transactions: List[Dict]) -> List[Dict]:
         cat = t['category']
         category_totals[cat] = category_totals.get(cat, 0) + t['carbon_kg']
 
-    # Get top 3 categories
+    # Get top 3 highest-emission categories
     top_categories = sorted(category_totals.items(), key=lambda x: x[1], reverse=True)[:3]
 
     classifier = SimpleClassifier()
     suggestions = []
 
-    # Category-specific suggestions with details
+    # Category-specific suggestion templates
     suggestion_templates = {
         "food_meat": {
             "icon": "🥗",
@@ -330,6 +375,7 @@ def generate_enhanced_suggestions(transactions: List[Dict]) -> List[Dict]:
         }
     }
 
+    # Generate suggestions for top categories
     for category, carbon in top_categories:
         if category in suggestion_templates:
             template = suggestion_templates[category]
@@ -363,8 +409,13 @@ def generate_enhanced_suggestions(transactions: List[Dict]) -> List[Dict]:
 # Data Import/Export Functions
 # ===========================
 
-def export_data_to_json():
-    """Export transactions to JSON format."""
+def export_data_to_json() -> str:
+    """
+    Export transactions to JSON format.
+
+    Returns:
+        JSON string of exported data, or None if no transactions
+    """
     if not st.session_state.transactions:
         return None
 
@@ -375,8 +426,16 @@ def export_data_to_json():
     return json.dumps(data, indent=2)
 
 
-def import_data_from_json(json_str: str):
-    """Import transactions from JSON format."""
+def import_data_from_json(json_str: str) -> Tuple[bool, any]:
+    """
+    Import transactions from JSON format.
+
+    Args:
+        json_str: JSON string containing transaction data
+
+    Returns:
+        Tuple of (success: bool, result: int or error_message: str)
+    """
     try:
         data = json.loads(json_str)
         if "transactions" in data:
@@ -387,14 +446,112 @@ def import_data_from_json(json_str: str):
         return False, f"Invalid JSON: {str(e)}"
 
 
-def get_download_link(data: str, filename: str, text: str):
-    """Generate a download link for data."""
-    b64 = base64.b64encode(data.encode()).decode()
-    return f'<a href="data:application/json;base64,{b64}" download="{filename}">{text}</a>'
+# ===========================
+# Helper Functions
+# ===========================
+
+def calculate_dashboard_metrics(df: pd.DataFrame) -> Dict[str, float]:
+    """
+    Calculate key metrics from transaction dataframe.
+
+    Args:
+        df: DataFrame with transaction data
+
+    Returns:
+        Dictionary containing calculated metrics
+    """
+    return {
+        "total_carbon": df['carbon_kg'].sum(),
+        "total_amount": df['amount'].sum(),
+        "transaction_count": len(df),
+        "avg_per_transaction": df['carbon_kg'].sum() / len(df) if len(df) > 0 else 0
+    }
+
+
+def create_horizontal_bar_chart(data: pd.DataFrame, x_col: str, y_col: str,
+                                 color_col: str = None, title: str = None) -> go.Figure:
+    """
+    Create a horizontal bar chart with consistent styling.
+
+    Args:
+        data: DataFrame containing chart data
+        x_col: Column name for x-axis values
+        y_col: Column name for y-axis categories
+        color_col: Optional column name for bar colors
+        title: Optional chart title
+
+    Returns:
+        Plotly Figure object
+    """
+    fig = go.Figure()
+
+    for idx, row in data.iterrows():
+        color = row[color_col] if color_col and color_col in data.columns else CHART_COLORS["your_footprint"]
+        fig.add_trace(go.Bar(
+            x=[row[x_col]],
+            y=[row[y_col]],
+            orientation='h',
+            name=row[y_col],
+            marker_color=color,
+            text=[f"{row[x_col]} kg"],
+            textposition='auto',
+        ))
+
+    fig.update_layout(
+        showlegend=False,
+        xaxis_title="Monthly Emissions (kg CO₂)",
+        title=title,
+        height=300,
+        margin=dict(l=0, r=0, t=30 if title else 0, b=0)
+    )
+    return fig
+
+
+def load_sample_dataset(dataset_name: str, datasets: Dict[str, List[Dict]]) -> None:
+    """
+    Load a sample dataset into session state.
+
+    Args:
+        dataset_name: Name of the dataset to load
+        datasets: Dictionary of available datasets
+    """
+    classifier = SimpleClassifier()
+    st.session_state.transactions = []
+
+    for item in datasets[dataset_name]:
+        category, carbon = classifier.classify(item["description"], item["amount"])
+        st.session_state.transactions.append({
+            "date": item["date"],
+            "description": item["description"],
+            "amount": item["amount"],
+            "category": category,
+            "carbon_kg": carbon
+        })
+
+
+def render_comparison_metrics(monthly_carbon: float) -> None:
+    """
+    Render comparison metrics against benchmarks.
+
+    Args:
+        monthly_carbon: User's monthly carbon emissions in kg
+    """
+    us_percent = (monthly_carbon / CARBON_BENCHMARKS["us_avg"]) * 100
+    world_percent = (monthly_carbon / CARBON_BENCHMARKS["world_avg"]) * 100
+    paris_percent = (monthly_carbon / CARBON_BENCHMARKS["paris_target"]) * 100
+
+    status_us = "🟢 Below" if monthly_carbon < CARBON_BENCHMARKS["us_avg"] else "🔴 Above"
+    st.metric("vs US Avg", status_us, f"{us_percent:.0f}%")
+
+    status_world = "🟢 Below" if monthly_carbon < CARBON_BENCHMARKS["world_avg"] else "🔴 Above"
+    st.metric("vs World Avg", status_world, f"{world_percent:.0f}%")
+
+    status_paris = "🟢 Below" if monthly_carbon < CARBON_BENCHMARKS["paris_target"] else "🔴 Above"
+    st.metric("vs Paris Target", status_paris, f"{paris_percent:.0f}%")
 
 
 # ===========================
-# Streamlit UI
+# Streamlit UI Configuration
 # ===========================
 
 st.set_page_config(
@@ -403,45 +560,70 @@ st.set_page_config(
     layout="wide"
 )
 
-# Enhanced CSS
+# ===========================
+# CSS Styling
+# ===========================
+
 st.markdown("""
     <style>
-    /* Base font settings with fallbacks for compatibility */
+    /* ===== BASE STYLES ===== */
+    /* Font settings with emoji support and fallbacks */
     * {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol" !important;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                     "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji",
+                     "Segoe UI Emoji", "Segoe UI Symbol" !important;
     }
 
     .main {
         background-color: #f0f8f0;
     }
+
+    /* ===== METRIC STYLES ===== */
     .stMetric {
         background-color: white;
         padding: 10px;
         border-radius: 5px;
     }
-    /* Fix metric text visibility */
+
+    /* Ensure metric text is visible and properly formatted */
     [data-testid="stMetricValue"] {
         color: #1B5E20 !important;
         font-variant-numeric: tabular-nums;
         line-height: 1.2;
     }
+
     [data-testid="stMetricLabel"] {
         color: #333333 !important;
         line-height: 1.4;
     }
+
     [data-testid="stMetricDelta"] {
         color: #666666 !important;
         line-height: 1.3;
     }
-    /* Ensure emojis render properly */
+
+    /* ===== TYPOGRAPHY ===== */
+    /* Ensure emojis render properly in headings and buttons */
     h1, h2, h3, h4, .stButton button {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol" !important;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                     "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji",
+                     "Segoe UI Emoji", "Segoe UI Symbol" !important;
     }
+
     /* Code blocks should always be monospace */
     code, pre, .stCodeBlock {
-        font-family: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace !important;
+        font-family: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono",
+                     Consolas, "Courier New", monospace !important;
     }
-    /* Suggestion cards */
+
+    /* Fix text in form elements */
+    .stButton button, .stTextInput input, .stNumberInput input, .stSelectbox select {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                     "Helvetica Neue", Arial, sans-serif !important;
+        line-height: 1.5;
+    }
+
+    /* ===== SUGGESTION CARDS ===== */
     .suggestion-card {
         background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
         padding: 1.5rem;
@@ -450,88 +632,63 @@ st.markdown("""
         border-left: 5px solid #4CAF50;
         box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
+
     .suggestion-card h4 {
         color: #1B5E20;
         margin-bottom: 0.5rem;
         line-height: 1.4;
     }
+
     .suggestion-card p {
         color: #333;
         margin: 0.3rem 0;
         line-height: 1.6;
     }
-    /* Fix text in buttons and inputs */
-    .stButton button, .stTextInput input, .stNumberInput input, .stSelectbox select {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
-        line-height: 1.5;
-    }
-    /* Budget bar */
-    .budget-bar {
-        background: #e0e0e0;
-        border-radius: 10px;
-        height: 30px;
-        position: relative;
-        margin: 1rem 0;
-    }
-    .budget-fill {
-        height: 100%;
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-weight: bold;
-    }
     </style>
 """, unsafe_allow_html=True)
 
-# Title
+
+# ===========================
+# Header
+# ===========================
+
 st.title("🌍 Carbon Footprint Tracker")
 st.markdown("*Track your environmental impact from purchases*")
 
-# Sidebar
+
+# ===========================
+# Sidebar Navigation & Controls
+# ===========================
+
 with st.sidebar:
     st.header("📊 Menu")
     page = st.radio("Navigate", ["Dashboard", "Add Transaction", "Upload CSV", "Suggestions", "Data Manager"])
 
     st.divider()
 
-    # Sample data selector
+    # Sample data loader
     st.subheader("📦 Load Sample Data")
     datasets = get_sample_datasets()
     selected_dataset = st.selectbox("Choose a profile:", list(datasets.keys()))
 
     if st.button("🎲 Load Selected Dataset", use_container_width=True):
-        classifier = SimpleClassifier()
-        st.session_state.transactions = []
-
-        for item in datasets[selected_dataset]:
-            category, carbon = classifier.classify(item["description"], item["amount"])
-            st.session_state.transactions.append({
-                "date": item["date"],
-                "description": item["description"],
-                "amount": item["amount"],
-                "category": category,
-                "carbon_kg": carbon
-            })
-
+        load_sample_dataset(selected_dataset, datasets)
         st.success(f"Loaded {len(datasets[selected_dataset])} transactions!")
         st.rerun()
 
     st.divider()
 
-    # Quick stats
+    # Quick stats in sidebar
     if st.session_state.transactions:
         st.markdown("### 💡 Quick Stats")
-        total_carbon = sum(t['carbon_kg'] for t in st.session_state.transactions)
-        total_amount = sum(t['amount'] for t in st.session_state.transactions)
-        st.metric("Total Emissions", f"{total_carbon:.1f} kg CO₂")
-        st.metric("Total Spent", f"${total_amount:.2f}")
-        st.metric("Transactions", len(st.session_state.transactions))
+        metrics = calculate_dashboard_metrics(pd.DataFrame(st.session_state.transactions))
+        st.metric("Total Emissions", f"{metrics['total_carbon']:.1f} kg CO₂")
+        st.metric("Total Spent", f"${metrics['total_amount']:.2f}")
+        st.metric("Transactions", metrics['transaction_count'])
 
 
 # ===========================
-# Pages
+# PAGE: Dashboard
 # ===========================
 
 if page == "Dashboard":
@@ -540,40 +697,24 @@ if page == "Dashboard":
     if not st.session_state.transactions:
         st.info("👋 Add transactions or load sample data to get started!")
     else:
-        # Calculate metrics
         df = pd.DataFrame(st.session_state.transactions)
-        total_carbon = df['carbon_kg'].sum()
-        total_amount = df['amount'].sum()
-        transaction_count = len(df)
+        metrics = calculate_dashboard_metrics(df)
 
-        # Calculate monthly carbon (assume data is from current month)
-        monthly_carbon = total_carbon
-
-        # Display metrics with comparisons
+        # Display main metrics
         col1, col2, col3, col4 = st.columns(4)
-
         with col1:
-            col1.metric("Total Emissions", f"{total_carbon:.1f} kg CO₂")
-
+            st.metric("Total Emissions", f"{metrics['total_carbon']:.1f} kg CO₂")
         with col2:
-            col2.metric("Total Spent", f"${total_amount:.2f}")
-
+            st.metric("Total Spent", f"${metrics['total_amount']:.2f}")
         with col3:
-            col3.metric("Transactions", transaction_count)
-
+            st.metric("Transactions", metrics['transaction_count'])
         with col4:
-            avg_per_transaction = total_carbon / transaction_count
-            col4.metric("Avg per Purchase", f"{avg_per_transaction:.1f} kg CO₂")
+            st.metric("Avg per Purchase", f"{metrics['avg_per_transaction']:.1f} kg CO₂")
 
         st.divider()
 
-        # Carbon Budget Comparison
+        # Carbon Budget Comparison Section
         st.subheader("🎯 Carbon Budget Comparison")
-
-        # Monthly averages (kg CO₂)
-        us_avg_monthly = 1333  # 16 tons/year ÷ 12 months
-        world_avg_monthly = 417  # 5 tons/year ÷ 12 months
-        paris_target_monthly = 167  # 2 tons/year ÷ 12 months (Paris Agreement target)
 
         col1, col2 = st.columns([2, 1])
 
@@ -581,43 +722,30 @@ if page == "Dashboard":
             # Create comparison bar chart
             comparison_data = pd.DataFrame({
                 'Category': ['Your Footprint', 'US Average', 'World Average', 'Paris Target'],
-                'Emissions (kg CO₂)': [monthly_carbon, us_avg_monthly, world_avg_monthly, paris_target_monthly],
-                'Color': ['#4CAF50', '#FF9800', '#2196F3', '#9C27B0']
+                'Emissions (kg CO₂)': [
+                    metrics['total_carbon'],
+                    CARBON_BENCHMARKS["us_avg"],
+                    CARBON_BENCHMARKS["world_avg"],
+                    CARBON_BENCHMARKS["paris_target"]
+                ],
+                'Color': [
+                    CHART_COLORS["your_footprint"],
+                    CHART_COLORS["us_avg"],
+                    CHART_COLORS["world_avg"],
+                    CHART_COLORS["paris_target"]
+                ]
             })
 
-            fig = go.Figure()
-            for idx, row in comparison_data.iterrows():
-                fig.add_trace(go.Bar(
-                    x=[row['Emissions (kg CO₂)']],
-                    y=[row['Category']],
-                    orientation='h',
-                    name=row['Category'],
-                    marker_color=row['Color'],
-                    text=[f"{row['Emissions (kg CO₂)']} kg"],
-                    textposition='auto',
-                ))
-
-            fig.update_layout(
-                showlegend=False,
-                xaxis_title="Monthly Emissions (kg CO₂)",
-                height=300,
-                margin=dict(l=0, r=0, t=0, b=0)
+            fig = create_horizontal_bar_chart(
+                comparison_data,
+                'Emissions (kg CO₂)',
+                'Category',
+                'Color'
             )
             st.plotly_chart(fig, use_container_width=True)
 
         with col2:
-            # Show percentage comparisons
-            us_percent = (monthly_carbon / us_avg_monthly) * 100
-            world_percent = (monthly_carbon / world_avg_monthly) * 100
-
-            status = "🟢 Below" if monthly_carbon < us_avg_monthly else "🔴 Above"
-            st.metric("vs US Avg", f"{status}", f"{us_percent:.0f}%")
-
-            status = "🟢 Below" if monthly_carbon < world_avg_monthly else "🔴 Above"
-            st.metric("vs World Avg", f"{status}", f"{world_percent:.0f}%")
-
-            status = "🟢 Below" if monthly_carbon < paris_target_monthly else "🔴 Above"
-            st.metric("vs Paris Target", f"{status}", f"{(monthly_carbon/paris_target_monthly*100):.0f}%")
+            render_comparison_metrics(metrics['total_carbon'])
 
         # Paris Target explanation
         with st.expander("ℹ️ What is the Paris Target?"):
@@ -640,7 +768,7 @@ if page == "Dashboard":
 
         st.divider()
 
-        # Charts
+        # Emissions by Category Charts
         col1, col2 = st.columns(2)
 
         with col1:
@@ -652,7 +780,7 @@ if page == "Dashboard":
                 category_totals,
                 values='carbon_kg',
                 names='category',
-                color_discrete_sequence=px.colors.sequential.Greens_r
+                color_discrete_sequence=CHART_COLORS["green_sequential"]
             )
             fig.update_traces(textposition='inside', textinfo='percent+label')
             st.plotly_chart(fig, use_container_width=True)
@@ -667,13 +795,13 @@ if page == "Dashboard":
                 y='category',
                 orientation='h',
                 color='carbon_kg',
-                color_continuous_scale='Reds',
+                color_continuous_scale=CHART_COLORS["red_scale"],
                 labels={'carbon_kg': 'CO₂ (kg)'}
             )
             fig.update_layout(showlegend=False)
             st.plotly_chart(fig, use_container_width=True)
 
-        # Timeline
+        # Timeline Chart
         st.subheader("📅 Emissions Over Time")
         df['date'] = pd.to_datetime(df['date'])
         daily = df.groupby('date')['carbon_kg'].sum().reset_index()
@@ -683,11 +811,15 @@ if page == "Dashboard":
             x='date',
             y='carbon_kg',
             labels={'carbon_kg': 'CO₂ (kg)', 'date': 'Date'},
-            color_discrete_sequence=['#4CAF50']
+            color_discrete_sequence=[CHART_COLORS["your_footprint"]]
         )
         fig.update_layout(hovermode='x unified')
         st.plotly_chart(fig, use_container_width=True)
 
+
+# ===========================
+# PAGE: Add Transaction
+# ===========================
 
 elif page == "Add Transaction":
     st.header("➕ Add Transaction")
@@ -720,6 +852,10 @@ elif page == "Add Transaction":
             st.rerun()
 
 
+# ===========================
+# PAGE: Upload CSV
+# ===========================
+
 elif page == "Upload CSV":
     st.header("📤 Upload CSV")
 
@@ -740,7 +876,7 @@ elif page == "Upload CSV":
             if st.button("Process & Add Transactions"):
                 classifier = SimpleClassifier()
 
-                # Detect column names
+                # Detect column names (case-insensitive)
                 desc_col = next((c for c in df.columns if c.lower() in ['description', 'merchant', 'name']), None)
                 amt_col = next((c for c in df.columns if c.lower() in ['amount', 'total', 'price']), None)
                 date_col = next((c for c in df.columns if c.lower() == 'date'), None)
@@ -771,6 +907,10 @@ elif page == "Upload CSV":
         except Exception as e:
             st.error(f"Error: {str(e)}")
 
+
+# ===========================
+# PAGE: Suggestions
+# ===========================
 
 elif page == "Suggestions":
     st.header("💡 Carbon Reduction Suggestions")
@@ -804,7 +944,8 @@ elif page == "Suggestions":
             st.metric("Current Footprint", f"{total_carbon:.1f} kg CO₂")
 
         with col2:
-            st.metric("Potential Reduction", f"{total_reduction:.1f} kg CO₂", f"-{(total_reduction/total_carbon*100):.0f}%")
+            reduction_percent = (total_reduction / total_carbon * 100) if total_carbon > 0 else 0
+            st.metric("Potential Reduction", f"{total_reduction:.1f} kg CO₂", f"-{reduction_percent:.0f}%")
 
         with col3:
             new_footprint = total_carbon - total_reduction
@@ -818,17 +959,21 @@ elif page == "Suggestions":
         col1, col2, col3 = st.columns(3)
 
         with col1:
-            trees = total_reduction / 21.77  # kg CO₂ absorbed per tree per year
+            trees = total_reduction / ENVIRONMENTAL_FACTORS["tree_co2_per_year"]
             st.info(f"**🌲 {trees:.1f} trees**  \nPlanted for 1 year")
 
         with col2:
-            miles = total_reduction / 0.404  # kg CO₂ per mile driven
+            miles = total_reduction / ENVIRONMENTAL_FACTORS["car_co2_per_mile"]
             st.info(f"**🚗 {miles:.0f} miles**  \nNot driven")
 
         with col3:
-            smartphones = total_reduction / 8.3  # kg CO₂ to charge phone for 1 year
+            smartphones = total_reduction / ENVIRONMENTAL_FACTORS["phone_charge_per_year"]
             st.info(f"**📱 {smartphones:.1f} phones**  \nCharged for 1 year")
 
+
+# ===========================
+# PAGE: Data Manager
+# ===========================
 
 elif page == "Data Manager":
     st.header("💾 Data Management")
@@ -889,7 +1034,10 @@ elif page == "Data Manager":
         st.rerun()
 
 
+# ===========================
 # Footer
+# ===========================
+
 st.divider()
 col1, col2, col3 = st.columns([1, 1, 1])
 with col2:
