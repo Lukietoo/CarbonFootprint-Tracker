@@ -7,6 +7,24 @@ A Python-based web application that automatically estimates your carbon footprin
 ![Streamlit](https://img.shields.io/badge/Streamlit-1.28+-red.svg)
 ![License](https://img.shields.io/badge/License-MIT-yellow.svg)
 
+## 🚀 Quick Start - Simplified Version
+
+**Want to get started in 30 seconds?** Try the simplified single-file version:
+
+```bash
+pip install -r requirements-simple.txt
+./run_simple.sh
+```
+
+See [README-SIMPLE.md](README-SIMPLE.md) for details. The simple version:
+- ✅ Single file (373 lines vs 2,200+)
+- ✅ No database setup needed
+- ✅ No API keys required
+- ✅ Only 3 dependencies
+- ✅ Runs instantly
+
+---
+
 ## Overview
 
 Most people want to live sustainably but don't know where to start. **Carbon Footprint Tracker** bridges that gap by analyzing receipts or bank transactions, estimating the CO₂ impact of each purchase, and providing data-driven recommendations to help users make greener choices.
