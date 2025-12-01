@@ -824,13 +824,14 @@ elif page == "Data Manager":
                 data=json_data,
                 file_name=f"carbon_tracker_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
                 mime="application/json",
-                use_container_width=True
+                use_container_width=True,
+                key="download_json_button"
             )
 
             st.success(f"✅ Ready to export {len(st.session_state.transactions)} transactions")
 
             # Show preview
-            with st.expander("Preview Export Data"):
+            with st.expander("📋 Preview Export Data", expanded=False):
                 st.code(json_data, language="json")
         else:
             st.info("No data to export. Add some transactions first!")
@@ -843,7 +844,7 @@ elif page == "Data Manager":
         if uploaded_json:
             json_str = uploaded_json.read().decode('utf-8')
 
-            if st.button("Import Data", type="primary", use_container_width=True):
+            if st.button("Import Data", type="primary", use_container_width=True, key="import_data_button"):
                 success, result = import_data_from_json(json_str)
 
                 if success:
@@ -858,12 +859,10 @@ elif page == "Data Manager":
     st.subheader("🗑️ Clear Data")
     st.warning("⚠️ This will permanently delete all your transactions!")
 
-    col1, col2, col3 = st.columns([1, 1, 2])
-    with col1:
-        if st.button("Clear All Data", type="secondary", use_container_width=True):
-            st.session_state.transactions = []
-            st.success("Data cleared!")
-            st.rerun()
+    if st.button("Clear All Data", type="secondary", key="clear_data_button"):
+        st.session_state.transactions = []
+        st.success("Data cleared!")
+        st.rerun()
 
 
 # Footer
