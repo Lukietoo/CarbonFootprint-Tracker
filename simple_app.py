@@ -595,6 +595,25 @@ if page == "Dashboard":
             status = "🟢 Below" if monthly_carbon < paris_target_monthly else "🔴 Above"
             st.metric("vs Paris Target", f"{status}", f"{(monthly_carbon/paris_target_monthly*100):.0f}%")
 
+        # Paris Target explanation
+        with st.expander("ℹ️ What is the Paris Target?"):
+            st.markdown("""
+            **The Paris Agreement** is a 2015 international treaty where 196 countries committed to limiting
+            global warming to well below 2°C (preferably 1.5°C) above pre-industrial levels.
+
+            **The Paris Target in our app: 2 tons CO₂/year per person**
+            - **Monthly**: 167 kg CO₂/month
+            - **Why this number?**: Scientists estimate we need to reduce global per-capita emissions to
+              ~2 tons/year by 2050 to avoid catastrophic climate change
+
+            **Context:**
+            - 🔴 Current US average: ~16 tons/year **(8x over target!)**
+            - 🟡 World average: ~5 tons/year **(2.5x over target)**
+            - 🟢 Paris target: ~2 tons/year **(sustainable)**
+
+            Meeting this target requires significant lifestyle changes, but every reduction helps! 🌱
+            """)
+
         st.divider()
 
         # Charts
