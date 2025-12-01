@@ -915,21 +915,33 @@ elif page == "Upload CSV":
 elif page == "Suggestions":
     st.header("💡 Carbon Reduction Suggestions")
 
-    suggestions = generate_enhanced_suggestions(st.session_state.transactions)
+    if not st.session_state.transactions:
+        st.info("👋 Add transactions or load sample data to get personalized carbon reduction suggestions!")
+        st.markdown("""
+        ### How it works:
+        1. **Add your transactions** using the "Add Transaction" page or upload a CSV file
+        2. **Or load sample data** from the sidebar to see example suggestions
+        3. **Get personalized recommendations** based on your highest carbon categories
+        4. **See potential impact** with specific reduction amounts and alternatives
 
-    st.markdown("**Personalized recommendations to reduce your carbon footprint:**")
-    st.markdown("")
+        Your suggestions will focus on the areas where you can make the biggest difference! 🌱
+        """)
+    else:
+        suggestions = generate_enhanced_suggestions(st.session_state.transactions)
 
-    for i, sug in enumerate(suggestions, 1):
-        st.markdown(f"""
-        <div class="suggestion-card">
-            <h4>{sug['icon']} {i}. {sug['title']}</h4>
-            <p><strong>Action:</strong> {sug['description']}</p>
-            <p><strong>Alternative:</strong> {sug['alternative']}</p>
-            <p><strong>Potential Reduction:</strong> {sug['reduction_kg']:.1f} kg CO₂/month</p>
-            <p><strong>Difficulty:</strong> {sug['difficulty'].title()}</p>
-        </div>
-        """, unsafe_allow_html=True)
+        st.markdown("**Personalized recommendations to reduce your carbon footprint:**")
+        st.markdown("")
+
+        for i, sug in enumerate(suggestions, 1):
+            st.markdown(f"""
+            <div class="suggestion-card">
+                <h4>{sug['icon']} {i}. {sug['title']}</h4>
+                <p><strong>Action:</strong> {sug['description']}</p>
+                <p><strong>Alternative:</strong> {sug['alternative']}</p>
+                <p><strong>Potential Reduction:</strong> {sug['reduction_kg']:.1f} kg CO₂/month</p>
+                <p><strong>Difficulty:</strong> {sug['difficulty'].title()}</p>
+            </div>
+            """, unsafe_allow_html=True)
 
     if st.session_state.transactions:
         st.divider()
