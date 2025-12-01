@@ -15,18 +15,6 @@ A Python-based web application that automatically estimates your carbon footprin
 pip install -r requirements-simple.txt
 ./run_simple.sh
 ```
-
-See [README-SIMPLE.md](README-SIMPLE.md) for details. The simple version:
-- ✅ Single file (854 lines vs 2,200+)
-- ✅ No database setup needed
-- ✅ No API keys required
-- ✅ Only 3 dependencies
-- ✅ Runs instantly
-- ✅ Data export/import to persist across sessions
-- ✅ Carbon budget comparison (US, World, Paris targets)
-- ✅ Enhanced suggestions with specific alternatives
-- ✅ Multiple sample datasets spanning 11 months (Jan-Nov 2025)
-
 ---
 
 ## Overview
