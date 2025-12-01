@@ -84,7 +84,7 @@ class SimpleClassifier:
         Classify transaction and estimate carbon.
 
         Returns:
-            (category, carbon_kg)
+            (category, carbon_kg rounded to 2 decimal places)
         """
         description_lower = description.lower()
 
@@ -94,11 +94,11 @@ class SimpleClassifier:
                 continue
             for keyword in data["keywords"]:
                 if keyword in description_lower:
-                    carbon_kg = amount * data["carbon_per_dollar"]
+                    carbon_kg = round(amount * data["carbon_per_dollar"], 2)
                     return category, carbon_kg
 
         # Default to "other"
-        carbon_kg = amount * self.CATEGORIES["other"]["carbon_per_dollar"]
+        carbon_kg = round(amount * self.CATEGORIES["other"]["carbon_per_dollar"], 2)
         return "other", carbon_kg
 
 
@@ -335,8 +335,8 @@ def generate_enhanced_suggestions(transactions: List[Dict]) -> List[Dict]:
             template = suggestion_templates[category]
             cat_data = classifier.CATEGORIES[category]
 
-            # Calculate potential reduction
-            reduction = carbon * (cat_data["reduction_percent"] / 100)
+            # Calculate potential reduction (rounded to 2 decimal places)
+            reduction = round(carbon * (cat_data["reduction_percent"] / 100), 2)
 
             suggestions.append({
                 "icon": template["icon"],
