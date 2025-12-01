@@ -927,11 +927,13 @@ elif page == "Suggestions":
         Your suggestions will focus on the areas where you can make the biggest difference! 🌱
         """)
     else:
+        # Generate suggestions
         suggestions = generate_enhanced_suggestions(st.session_state.transactions)
 
         st.markdown("**Personalized recommendations to reduce your carbon footprint:**")
         st.markdown("")
 
+        # Display suggestion cards
         for i, sug in enumerate(suggestions, 1):
             st.markdown(f"""
             <div class="suggestion-card">
@@ -943,7 +945,6 @@ elif page == "Suggestions":
             </div>
             """, unsafe_allow_html=True)
 
-    if st.session_state.transactions:
         st.divider()
 
         # Calculate total potential impact
