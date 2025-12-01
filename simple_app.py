@@ -7,8 +7,11 @@ No external APIs or database required.
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-from datetime import datetime
+import plotly.graph_objects as go
+from datetime import datetime, timedelta
 from typing import Dict, List, Tuple
+import json
+import base64
 
 # ===========================
 # Data Storage (In-Memory)
@@ -29,34 +32,50 @@ class SimpleClassifier:
         "food_meat": {
             "keywords": ["beef", "steak", "burger", "meat", "chicken", "pork", "butcher"],
             "carbon_per_dollar": 0.8,
+            "alternative": "plant-based meals",
+            "reduction_percent": 75
         },
         "food_plant": {
             "keywords": ["vegetable", "fruit", "salad", "vegan", "organic", "whole foods"],
             "carbon_per_dollar": 0.2,
+            "alternative": "local/seasonal produce",
+            "reduction_percent": 20
         },
         "transportation_air": {
             "keywords": ["airline", "flight", "airport", "airways", "jetblue", "united", "delta"],
             "carbon_per_dollar": 2.5,
+            "alternative": "train or bus for shorter trips",
+            "reduction_percent": 80
         },
         "transportation_car": {
             "keywords": ["gas", "fuel", "shell", "chevron", "exxon", "petrol"],
             "carbon_per_dollar": 1.2,
+            "alternative": "public transit, carpool, or electric vehicle",
+            "reduction_percent": 60
         },
         "energy": {
             "keywords": ["electric", "electricity", "power", "utility", "energy"],
             "carbon_per_dollar": 0.9,
+            "alternative": "renewable energy plan",
+            "reduction_percent": 70
         },
         "retail": {
             "keywords": ["amazon", "walmart", "target", "clothing", "electronics"],
             "carbon_per_dollar": 0.5,
+            "alternative": "second-hand or sustainable brands",
+            "reduction_percent": 50
         },
         "dining": {
             "keywords": ["restaurant", "cafe", "coffee", "starbucks", "pizza"],
             "carbon_per_dollar": 0.5,
+            "alternative": "home cooking with local ingredients",
+            "reduction_percent": 40
         },
         "other": {
             "keywords": [],
             "carbon_per_dollar": 0.3,
+            "alternative": "sustainable alternatives",
+            "reduction_percent": 30
         }
     }
 
@@ -84,13 +103,63 @@ class SimpleClassifier:
 
 
 # ===========================
-# Suggestion Generator
+# Sample Data Generator
 # ===========================
 
-def generate_suggestions(transactions: List[Dict]) -> List[str]:
-    """Generate simple carbon reduction suggestions."""
+def get_sample_datasets():
+    """Get multiple sample datasets with different carbon profiles."""
+    classifier = SimpleClassifier()
+
+    datasets = {
+        "🌱 Eco-Conscious (Low Carbon)": [
+            {"date": "2024-11-01", "description": "Whole Foods - Organic Vegetables", "amount": 45.00},
+            {"date": "2024-11-02", "description": "Local Farmers Market", "amount": 32.00},
+            {"date": "2024-11-05", "description": "Vegan Restaurant", "amount": 28.00},
+            {"date": "2024-11-07", "description": "Public Transit Pass", "amount": 85.00},
+            {"date": "2024-11-10", "description": "Second-hand Bookstore", "amount": 15.00},
+            {"date": "2024-11-12", "description": "Local Coffee Shop", "amount": 12.00},
+            {"date": "2024-11-15", "description": "Bike Shop - Repair", "amount": 40.00},
+            {"date": "2024-11-18", "description": "Community Garden Supplies", "amount": 25.00},
+        ],
+        "🏙️ Average American": [
+            {"date": "2024-11-01", "description": "Whole Foods Market", "amount": 87.50},
+            {"date": "2024-11-02", "description": "Shell Gas Station", "amount": 45.00},
+            {"date": "2024-11-03", "description": "United Airlines", "amount": 350.00},
+            {"date": "2024-11-05", "description": "Starbucks Coffee", "amount": 5.50},
+            {"date": "2024-11-07", "description": "Amazon - Electronics", "amount": 120.00},
+            {"date": "2024-11-10", "description": "Electric Utility Bill", "amount": 85.00},
+            {"date": "2024-11-12", "description": "Local Restaurant", "amount": 42.00},
+            {"date": "2024-11-15", "description": "Chevron Gas", "amount": 50.00},
+        ],
+        "🔥 High Carbon Lifestyle": [
+            {"date": "2024-11-01", "description": "Premium Steakhouse", "amount": 150.00},
+            {"date": "2024-11-02", "description": "Delta Airlines - International", "amount": 1200.00},
+            {"date": "2024-11-03", "description": "Luxury Car Dealership - Gas", "amount": 95.00},
+            {"date": "2024-11-05", "description": "High-end Fashion Store", "amount": 450.00},
+            {"date": "2024-11-07", "description": "Butcher Shop - Prime Beef", "amount": 180.00},
+            {"date": "2024-11-10", "description": "Shell Gas Station", "amount": 85.00},
+            {"date": "2024-11-12", "description": "Amazon - Fast Fashion", "amount": 250.00},
+            {"date": "2024-11-15", "description": "United Airlines - Domestic", "amount": 380.00},
+            {"date": "2024-11-18", "description": "Luxury Restaurant", "amount": 220.00},
+        ]
+    }
+
+    return datasets
+
+
+# ===========================
+# Enhanced Suggestion Generator
+# ===========================
+
+def generate_enhanced_suggestions(transactions: List[Dict]) -> List[Dict]:
+    """Generate detailed carbon reduction suggestions with alternatives."""
     if not transactions:
-        return ["Start tracking your purchases to get personalized suggestions!"]
+        return [{
+            "title": "Start Tracking",
+            "description": "Add your purchases to get personalized suggestions!",
+            "reduction_kg": 0,
+            "difficulty": "easy"
+        }]
 
     # Calculate category totals
     category_totals = {}
@@ -98,29 +167,113 @@ def generate_suggestions(transactions: List[Dict]) -> List[str]:
         cat = t['category']
         category_totals[cat] = category_totals.get(cat, 0) + t['carbon_kg']
 
-    # Get top categories
+    # Get top 3 categories
     top_categories = sorted(category_totals.items(), key=lambda x: x[1], reverse=True)[:3]
 
-    # Category-specific suggestions
-    suggestions_map = {
-        "food_meat": "🥗 Reduce meat consumption by 50% to save ~{:.1f} kg CO₂",
-        "transportation_air": "✈️ Consider train or bus for shorter trips to save ~{:.1f} kg CO₂",
-        "transportation_car": "🚗 Use public transit or carpool to save ~{:.1f} kg CO₂",
-        "energy": "⚡ Switch to renewable energy to save ~{:.1f} kg CO₂",
-        "retail": "♻️ Buy second-hand or sustainable products to save ~{:.1f} kg CO₂",
-        "dining": "🏠 Cook at home more often to save ~{:.1f} kg CO₂",
+    classifier = SimpleClassifier()
+    suggestions = []
+
+    # Category-specific suggestions with details
+    suggestion_templates = {
+        "food_meat": {
+            "icon": "🥗",
+            "title": "Switch to Plant-Based Meals",
+            "description": "Replace 50% of meat meals with plant-based alternatives like beans, lentils, or tofu",
+            "difficulty": "medium"
+        },
+        "transportation_air": {
+            "icon": "🚂",
+            "title": "Choose Ground Transportation",
+            "description": "For trips under 500 miles, take the train or bus instead of flying",
+            "difficulty": "easy"
+        },
+        "transportation_car": {
+            "icon": "🚌",
+            "title": "Use Public Transit or Carpool",
+            "description": "Replace 3 car trips per week with public transit, biking, or carpooling",
+            "difficulty": "medium"
+        },
+        "energy": {
+            "icon": "⚡",
+            "title": "Switch to Renewable Energy",
+            "description": "Sign up for a renewable energy plan or install solar panels",
+            "difficulty": "hard"
+        },
+        "retail": {
+            "icon": "♻️",
+            "title": "Buy Second-Hand First",
+            "description": "Check thrift stores, consignment shops, or online marketplaces before buying new",
+            "difficulty": "easy"
+        },
+        "dining": {
+            "icon": "🏠",
+            "title": "Cook More Meals at Home",
+            "description": "Prepare 3 more home-cooked meals per week using local ingredients",
+            "difficulty": "medium"
+        }
     }
 
-    suggestions = []
     for category, carbon in top_categories:
-        if category in suggestions_map:
-            reduction = carbon * 0.5  # Assume 50% reduction potential
-            suggestions.append(suggestions_map[category].format(reduction))
+        if category in suggestion_templates:
+            template = suggestion_templates[category]
+            cat_data = classifier.CATEGORIES[category]
 
-    if not suggestions:
-        suggestions.append("Keep tracking to get personalized suggestions!")
+            # Calculate potential reduction
+            reduction = carbon * (cat_data["reduction_percent"] / 100)
 
-    return suggestions
+            suggestions.append({
+                "icon": template["icon"],
+                "title": template["title"],
+                "description": template["description"],
+                "alternative": cat_data["alternative"],
+                "reduction_kg": reduction,
+                "difficulty": template["difficulty"],
+                "category": category
+            })
+
+    return suggestions if suggestions else [{
+        "icon": "💡",
+        "title": "Keep Tracking",
+        "description": "Continue monitoring your purchases to find more opportunities!",
+        "alternative": "sustainable choices",
+        "reduction_kg": 0,
+        "difficulty": "easy",
+        "category": "general"
+    }]
+
+
+# ===========================
+# Data Import/Export Functions
+# ===========================
+
+def export_data_to_json():
+    """Export transactions to JSON format."""
+    if not st.session_state.transactions:
+        return None
+
+    data = {
+        "export_date": datetime.now().isoformat(),
+        "transactions": st.session_state.transactions
+    }
+    return json.dumps(data, indent=2)
+
+
+def import_data_from_json(json_str: str):
+    """Import transactions from JSON format."""
+    try:
+        data = json.loads(json_str)
+        if "transactions" in data:
+            st.session_state.transactions = data["transactions"]
+            return True, len(data["transactions"])
+        return False, "Invalid format: missing 'transactions' key"
+    except json.JSONDecodeError as e:
+        return False, f"Invalid JSON: {str(e)}"
+
+
+def get_download_link(data: str, filename: str, text: str):
+    """Generate a download link for data."""
+    b64 = base64.b64encode(data.encode()).decode()
+    return f'<a href="data:application/json;base64,{b64}" download="{filename}">{text}</a>'
 
 
 # ===========================
@@ -133,7 +286,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# Simple CSS
+# Enhanced CSS
 st.markdown("""
     <style>
     .main {
@@ -154,6 +307,40 @@ st.markdown("""
     [data-testid="stMetricDelta"] {
         color: #666666 !important;
     }
+    /* Suggestion cards */
+    .suggestion-card {
+        background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+        padding: 1.5rem;
+        border-radius: 10px;
+        margin: 1rem 0;
+        border-left: 5px solid #4CAF50;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .suggestion-card h4 {
+        color: #1B5E20;
+        margin-bottom: 0.5rem;
+    }
+    .suggestion-card p {
+        color: #333;
+        margin: 0.3rem 0;
+    }
+    /* Budget bar */
+    .budget-bar {
+        background: #e0e0e0;
+        border-radius: 10px;
+        height: 30px;
+        position: relative;
+        margin: 1rem 0;
+    }
+    .budget-fill {
+        height: 100%;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -164,27 +351,20 @@ st.markdown("*Track your environmental impact from purchases*")
 # Sidebar
 with st.sidebar:
     st.header("📊 Menu")
-    page = st.radio("Navigate", ["Dashboard", "Add Transaction", "Upload CSV", "Suggestions"])
+    page = st.radio("Navigate", ["Dashboard", "Add Transaction", "Upload CSV", "Suggestions", "Data Manager"])
 
     st.divider()
 
-    # Sample data button
-    if st.button("🎲 Load Sample Data"):
-        sample_data = [
-            {"date": "2024-11-01", "description": "Whole Foods Market", "amount": 87.50},
-            {"date": "2024-11-02", "description": "Shell Gas Station", "amount": 45.00},
-            {"date": "2024-11-03", "description": "United Airlines", "amount": 350.00},
-            {"date": "2024-11-05", "description": "Starbucks Coffee", "amount": 5.50},
-            {"date": "2024-11-07", "description": "Amazon - Electronics", "amount": 120.00},
-            {"date": "2024-11-10", "description": "Electric Utility Bill", "amount": 85.00},
-            {"date": "2024-11-12", "description": "Local Restaurant", "amount": 42.00},
-            {"date": "2024-11-15", "description": "Chevron Gas", "amount": 50.00},
-        ]
+    # Sample data selector
+    st.subheader("📦 Load Sample Data")
+    datasets = get_sample_datasets()
+    selected_dataset = st.selectbox("Choose a profile:", list(datasets.keys()))
 
+    if st.button("🎲 Load Selected Dataset", use_container_width=True):
         classifier = SimpleClassifier()
         st.session_state.transactions = []
 
-        for item in sample_data:
+        for item in datasets[selected_dataset]:
             category, carbon = classifier.classify(item["description"], item["amount"])
             st.session_state.transactions.append({
                 "date": item["date"],
@@ -194,14 +374,19 @@ with st.sidebar:
                 "carbon_kg": carbon
             })
 
-        st.success("Sample data loaded!")
+        st.success(f"Loaded {len(datasets[selected_dataset])} transactions!")
         st.rerun()
 
-    # Clear data button
-    if st.button("🗑️ Clear All Data"):
-        st.session_state.transactions = []
-        st.success("Data cleared!")
-        st.rerun()
+    st.divider()
+
+    # Quick stats
+    if st.session_state.transactions:
+        st.markdown("### 💡 Quick Stats")
+        total_carbon = sum(t['carbon_kg'] for t in st.session_state.transactions)
+        total_amount = sum(t['amount'] for t in st.session_state.transactions)
+        st.metric("Total Emissions", f"{total_carbon:.1f} kg CO₂")
+        st.metric("Total Spent", f"${total_amount:.2f}")
+        st.metric("Transactions", len(st.session_state.transactions))
 
 
 # ===========================
@@ -220,11 +405,78 @@ if page == "Dashboard":
         total_amount = df['amount'].sum()
         transaction_count = len(df)
 
-        # Display metrics
-        col1, col2, col3 = st.columns(3)
-        col1.metric("Total Emissions", f"{total_carbon:.1f} kg CO₂")
-        col2.metric("Total Spent", f"${total_amount:.2f}")
-        col3.metric("Transactions", transaction_count)
+        # Calculate monthly carbon (assume data is from current month)
+        monthly_carbon = total_carbon
+
+        # Display metrics with comparisons
+        col1, col2, col3, col4 = st.columns(4)
+
+        with col1:
+            col1.metric("Total Emissions", f"{total_carbon:.1f} kg CO₂")
+
+        with col2:
+            col2.metric("Total Spent", f"${total_amount:.2f}")
+
+        with col3:
+            col3.metric("Transactions", transaction_count)
+
+        with col4:
+            avg_per_transaction = total_carbon / transaction_count
+            col4.metric("Avg per Purchase", f"{avg_per_transaction:.1f} kg CO₂")
+
+        st.divider()
+
+        # Carbon Budget Comparison
+        st.subheader("🎯 Carbon Budget Comparison")
+
+        # Monthly averages (kg CO₂)
+        us_avg_monthly = 1333  # 16 tons/year ÷ 12 months
+        world_avg_monthly = 417  # 5 tons/year ÷ 12 months
+        paris_target_monthly = 167  # 2 tons/year ÷ 12 months (Paris Agreement target)
+
+        col1, col2 = st.columns([2, 1])
+
+        with col1:
+            # Create comparison bar chart
+            comparison_data = pd.DataFrame({
+                'Category': ['Your Footprint', 'US Average', 'World Average', 'Paris Target'],
+                'Emissions (kg CO₂)': [monthly_carbon, us_avg_monthly, world_avg_monthly, paris_target_monthly],
+                'Color': ['#4CAF50', '#FF9800', '#2196F3', '#9C27B0']
+            })
+
+            fig = go.Figure()
+            for idx, row in comparison_data.iterrows():
+                fig.add_trace(go.Bar(
+                    x=[row['Emissions (kg CO₂)']],
+                    y=[row['Category']],
+                    orientation='h',
+                    name=row['Category'],
+                    marker_color=row['Color'],
+                    text=[f"{row['Emissions (kg CO₂)']} kg"],
+                    textposition='auto',
+                ))
+
+            fig.update_layout(
+                showlegend=False,
+                xaxis_title="Monthly Emissions (kg CO₂)",
+                height=300,
+                margin=dict(l=0, r=0, t=0, b=0)
+            )
+            st.plotly_chart(fig, use_container_width=True)
+
+        with col2:
+            # Show percentage comparisons
+            us_percent = (monthly_carbon / us_avg_monthly) * 100
+            world_percent = (monthly_carbon / world_avg_monthly) * 100
+
+            status = "🟢 Below" if monthly_carbon < us_avg_monthly else "🔴 Above"
+            st.metric("vs US Avg", f"{status}", f"{us_percent:.0f}%")
+
+            status = "🟢 Below" if monthly_carbon < world_avg_monthly else "🔴 Above"
+            st.metric("vs World Avg", f"{status}", f"{world_percent:.0f}%")
+
+            status = "🟢 Below" if monthly_carbon < paris_target_monthly else "🔴 Above"
+            st.metric("vs Paris Target", f"{status}", f"{(monthly_carbon/paris_target_monthly*100):.0f}%")
 
         st.divider()
 
@@ -232,7 +484,7 @@ if page == "Dashboard":
         col1, col2 = st.columns(2)
 
         with col1:
-            st.subheader("Emissions by Category")
+            st.subheader("📈 Emissions by Category")
             category_totals = df.groupby('category')['carbon_kg'].sum().reset_index()
             category_totals['category'] = category_totals['category'].str.replace('_', ' ').str.title()
 
@@ -242,10 +494,11 @@ if page == "Dashboard":
                 names='category',
                 color_discrete_sequence=px.colors.sequential.Greens_r
             )
+            fig.update_traces(textposition='inside', textinfo='percent+label')
             st.plotly_chart(fig, use_container_width=True)
 
         with col2:
-            st.subheader("Top Categories")
+            st.subheader("🎯 Top Categories")
             top_cats = category_totals.sort_values('carbon_kg', ascending=False).head(5)
 
             fig = px.bar(
@@ -257,10 +510,11 @@ if page == "Dashboard":
                 color_continuous_scale='Reds',
                 labels={'carbon_kg': 'CO₂ (kg)'}
             )
+            fig.update_layout(showlegend=False)
             st.plotly_chart(fig, use_container_width=True)
 
         # Timeline
-        st.subheader("Emissions Over Time")
+        st.subheader("📅 Emissions Over Time")
         df['date'] = pd.to_datetime(df['date'])
         daily = df.groupby('date')['carbon_kg'].sum().reset_index()
 
@@ -271,6 +525,7 @@ if page == "Dashboard":
             labels={'carbon_kg': 'CO₂ (kg)', 'date': 'Date'},
             color_discrete_sequence=['#4CAF50']
         )
+        fig.update_layout(hovermode='x unified')
         st.plotly_chart(fig, use_container_width=True)
 
 
@@ -358,26 +613,125 @@ elif page == "Upload CSV":
 
 
 elif page == "Suggestions":
-    st.header("💡 Suggestions")
+    st.header("💡 Carbon Reduction Suggestions")
 
-    suggestions = generate_suggestions(st.session_state.transactions)
+    suggestions = generate_enhanced_suggestions(st.session_state.transactions)
 
     st.markdown("**Personalized recommendations to reduce your carbon footprint:**")
+    st.markdown("")
 
-    for i, suggestion in enumerate(suggestions, 1):
-        st.info(f"{i}. {suggestion}")
+    for i, sug in enumerate(suggestions, 1):
+        st.markdown(f"""
+        <div class="suggestion-card">
+            <h4>{sug['icon']} {i}. {sug['title']}</h4>
+            <p><strong>Action:</strong> {sug['description']}</p>
+            <p><strong>Alternative:</strong> {sug['alternative']}</p>
+            <p><strong>Potential Reduction:</strong> {sug['reduction_kg']:.1f} kg CO₂/month</p>
+            <p><strong>Difficulty:</strong> {sug['difficulty'].title()}</p>
+        </div>
+        """, unsafe_allow_html=True)
 
     if st.session_state.transactions:
         st.divider()
+
+        # Calculate total potential impact
         total_carbon = sum(t['carbon_kg'] for t in st.session_state.transactions)
-        potential_reduction = total_carbon * 0.3  # Assume 30% reduction potential
+        total_reduction = sum(s['reduction_kg'] for s in suggestions)
 
-        st.success(f"🎯 Potential savings: **{potential_reduction:.1f} kg CO₂** (30% reduction)")
+        col1, col2, col3 = st.columns(3)
 
-        trees = potential_reduction / 21.77
-        st.info(f"🌳 That's like planting **{trees:.1f} trees** for a year!")
+        with col1:
+            st.metric("Current Footprint", f"{total_carbon:.1f} kg CO₂")
+
+        with col2:
+            st.metric("Potential Reduction", f"{total_reduction:.1f} kg CO₂", f"-{(total_reduction/total_carbon*100):.0f}%")
+
+        with col3:
+            new_footprint = total_carbon - total_reduction
+            st.metric("After Changes", f"{new_footprint:.1f} kg CO₂")
+
+        st.divider()
+
+        # Environmental equivalents
+        st.subheader("🌳 Environmental Impact")
+
+        col1, col2, col3 = st.columns(3)
+
+        with col1:
+            trees = total_reduction / 21.77  # kg CO₂ absorbed per tree per year
+            st.info(f"**🌲 {trees:.1f} trees**  \nPlanted for 1 year")
+
+        with col2:
+            miles = total_reduction / 0.404  # kg CO₂ per mile driven
+            st.info(f"**🚗 {miles:.0f} miles**  \nNot driven")
+
+        with col3:
+            smartphones = total_reduction / 8.3  # kg CO₂ to charge phone for 1 year
+            st.info(f"**📱 {smartphones:.1f} phones**  \nCharged for 1 year")
+
+
+elif page == "Data Manager":
+    st.header("💾 Data Management")
+
+    st.markdown("Export your data to save it, or import previously exported data.")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.subheader("📤 Export Data")
+
+        if st.session_state.transactions:
+            json_data = export_data_to_json()
+
+            st.download_button(
+                label="⬇️ Download as JSON",
+                data=json_data,
+                file_name=f"carbon_tracker_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
+                mime="application/json",
+                use_container_width=True
+            )
+
+            st.success(f"✅ Ready to export {len(st.session_state.transactions)} transactions")
+
+            # Show preview
+            with st.expander("Preview Export Data"):
+                st.code(json_data, language="json")
+        else:
+            st.info("No data to export. Add some transactions first!")
+
+    with col2:
+        st.subheader("📥 Import Data")
+
+        uploaded_json = st.file_uploader("Choose a JSON file", type=['json'], key="json_upload")
+
+        if uploaded_json:
+            json_str = uploaded_json.read().decode('utf-8')
+
+            if st.button("Import Data", type="primary", use_container_width=True):
+                success, result = import_data_from_json(json_str)
+
+                if success:
+                    st.success(f"✅ Imported {result} transactions!")
+                    st.rerun()
+                else:
+                    st.error(f"❌ Import failed: {result}")
+
+    st.divider()
+
+    # Clear data section
+    st.subheader("🗑️ Clear Data")
+    st.warning("⚠️ This will permanently delete all your transactions!")
+
+    col1, col2, col3 = st.columns([1, 1, 2])
+    with col1:
+        if st.button("Clear All Data", type="secondary", use_container_width=True):
+            st.session_state.transactions = []
+            st.success("Data cleared!")
+            st.rerun()
 
 
 # Footer
 st.divider()
-st.markdown("*Made with 💚 for a sustainable future*")
+col1, col2, col3 = st.columns([1, 1, 1])
+with col2:
+    st.markdown("<p style='text-align: center;'><em>Made with 💚 for a sustainable future</em></p>", unsafe_allow_html=True)
