@@ -5,10 +5,12 @@ A simplified, single-file carbon footprint tracker built with Streamlit. No data
 ## ✨ Features
 
 - **📊 Dashboard**: View your total emissions and category breakdown
+- **🎯 Carbon Budget**: Compare your footprint to US average, world average, and Paris Agreement targets
 - **➕ Add Transactions**: Manually add individual purchases
 - **📤 CSV Upload**: Bulk import transactions from CSV files
-- **💡 Suggestions**: Get simple recommendations to reduce your footprint
-- **🎲 Sample Data**: Load demo data to try it out
+- **💡 Enhanced Suggestions**: Get detailed, actionable recommendations with specific alternatives
+- **🎲 Multiple Sample Datasets**: Choose from Eco-Conscious, Average American, or High Carbon lifestyle profiles
+- **💾 Data Import/Export**: Save your data as JSON and reload it later - no more lost data on refresh!
 
 ## 🚀 Quick Start
 
@@ -77,15 +79,40 @@ Simple keyword-based classification:
 | Dining | Restaurants, Coffee | 0.5 kg |
 | Other | Everything else | 0.3 kg |
 
+## 🆕 New Features
+
+### Carbon Budget Comparison
+- Compare your emissions to US average (1,333 kg/month)
+- World average (417 kg/month)
+- Paris Agreement target (167 kg/month)
+- Visual bar chart with color-coded comparisons
+
+### Enhanced Suggestions
+- Detailed action plans with specific alternatives
+- Calculate exact reduction potential for each suggestion
+- Difficulty ratings (easy, medium, hard)
+- Environmental equivalents (trees planted, miles not driven, etc.)
+
+### Multiple Sample Datasets
+Choose from 3 different lifestyle profiles spanning Jan-Nov 2025:
+- 🌱 **Eco-Conscious** (27 transactions, ~220 kg CO₂) - Plant-based diet, public transit, second-hand shopping
+- 🏙️ **Average American** (38 transactions, ~4,200 kg CO₂) - Mixed diet, car commuting, occasional flights
+- 🔥 **High Carbon** (44 transactions, ~28,000 kg CO₂) - Frequent flying, luxury dining, high consumption
+
+### Data Persistence
+- Export your data to JSON format
+- Import previously exported data
+- Never lose your tracking data again!
+
 ## 🎯 What's Different from Full Version?
 
 This simplified version:
 
 - ✅ **Single file** (simple_app.py) vs multiple modules
-- ✅ **In-memory storage** vs SQLite/PostgreSQL database
+- ✅ **In-memory storage** with export/import vs SQLite/PostgreSQL database
 - ✅ **No external APIs** (no Climatiq, no OpenAI)
 - ✅ **3 dependencies** vs 15+ packages
-- ✅ **300 lines of code** vs 2,200+ lines
+- ✅ **737 lines of code** vs 2,200+ lines
 - ✅ **Runs instantly** - no setup needed
 
 ## 📁 Files
