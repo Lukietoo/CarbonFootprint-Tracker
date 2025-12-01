@@ -107,40 +107,157 @@ class SimpleClassifier:
 # ===========================
 
 def get_sample_datasets():
-    """Get multiple sample datasets with different carbon profiles."""
+    """Get multiple sample datasets with different carbon profiles spanning multiple months."""
     classifier = SimpleClassifier()
 
     datasets = {
         "🌱 Eco-Conscious (Low Carbon)": [
-            {"date": "2024-11-01", "description": "Whole Foods - Organic Vegetables", "amount": 45.00},
-            {"date": "2024-11-02", "description": "Local Farmers Market", "amount": 32.00},
-            {"date": "2024-11-05", "description": "Vegan Restaurant", "amount": 28.00},
-            {"date": "2024-11-07", "description": "Public Transit Pass", "amount": 85.00},
-            {"date": "2024-11-10", "description": "Second-hand Bookstore", "amount": 15.00},
-            {"date": "2024-11-12", "description": "Local Coffee Shop", "amount": 12.00},
-            {"date": "2024-11-15", "description": "Bike Shop - Repair", "amount": 40.00},
-            {"date": "2024-11-18", "description": "Community Garden Supplies", "amount": 25.00},
+            # January 2025
+            {"date": "2025-01-05", "description": "Whole Foods - Organic Vegetables", "amount": 45.00},
+            {"date": "2025-01-12", "description": "Local Farmers Market", "amount": 32.00},
+            {"date": "2025-01-18", "description": "Vegan Restaurant", "amount": 28.00},
+            {"date": "2025-01-25", "description": "Second-hand Bookstore", "amount": 15.00},
+            # February 2025
+            {"date": "2025-02-03", "description": "Public Transit Pass", "amount": 85.00},
+            {"date": "2025-02-14", "description": "Local Coffee Shop", "amount": 12.00},
+            {"date": "2025-02-20", "description": "Community Garden Supplies", "amount": 25.00},
+            # March 2025
+            {"date": "2025-03-08", "description": "Bike Shop - Repair", "amount": 40.00},
+            {"date": "2025-03-15", "description": "Farmers Market - Organic Produce", "amount": 38.00},
+            {"date": "2025-03-22", "description": "Vegan Cafe", "amount": 22.00},
+            # April 2025
+            {"date": "2025-04-05", "description": "Second-hand Clothing Store", "amount": 35.00},
+            {"date": "2025-04-18", "description": "Local Organic Grocery", "amount": 42.00},
+            {"date": "2025-04-25", "description": "Plant Nursery", "amount": 28.00},
+            # May 2025
+            {"date": "2025-05-10", "description": "Bike Sharing Monthly Pass", "amount": 30.00},
+            {"date": "2025-05-20", "description": "Farmers Market", "amount": 35.00},
+            # June 2025
+            {"date": "2025-06-08", "description": "Local Vegan Restaurant", "amount": 32.00},
+            {"date": "2025-06-22", "description": "Community Supported Agriculture", "amount": 50.00},
+            # July 2025
+            {"date": "2025-07-12", "description": "Organic Market", "amount": 45.00},
+            {"date": "2025-07-28", "description": "Second-hand Furniture", "amount": 80.00},
+            # August 2025
+            {"date": "2025-08-05", "description": "Local Farm Stand", "amount": 30.00},
+            {"date": "2025-08-19", "description": "Eco-friendly Cleaning Supplies", "amount": 25.00},
+            # September 2025
+            {"date": "2025-09-10", "description": "Farmers Market", "amount": 40.00},
+            {"date": "2025-09-25", "description": "Vegetarian Restaurant", "amount": 28.00},
+            # October 2025
+            {"date": "2025-10-08", "description": "Local Produce Market", "amount": 38.00},
+            {"date": "2025-10-22", "description": "Second-hand Books", "amount": 18.00},
+            # November 2025
+            {"date": "2025-11-12", "description": "Organic Vegetables", "amount": 42.00},
+            {"date": "2025-11-25", "description": "Vegan Thanksgiving Meal", "amount": 55.00},
         ],
         "🏙️ Average American": [
-            {"date": "2024-11-01", "description": "Whole Foods Market", "amount": 87.50},
-            {"date": "2024-11-02", "description": "Shell Gas Station", "amount": 45.00},
-            {"date": "2024-11-03", "description": "United Airlines", "amount": 350.00},
-            {"date": "2024-11-05", "description": "Starbucks Coffee", "amount": 5.50},
-            {"date": "2024-11-07", "description": "Amazon - Electronics", "amount": 120.00},
-            {"date": "2024-11-10", "description": "Electric Utility Bill", "amount": 85.00},
-            {"date": "2024-11-12", "description": "Local Restaurant", "amount": 42.00},
-            {"date": "2024-11-15", "description": "Chevron Gas", "amount": 50.00},
+            # January 2025
+            {"date": "2025-01-03", "description": "Whole Foods Market", "amount": 87.50},
+            {"date": "2025-01-08", "description": "Shell Gas Station", "amount": 45.00},
+            {"date": "2025-01-15", "description": "Starbucks Coffee", "amount": 5.50},
+            {"date": "2025-01-22", "description": "Local Restaurant", "amount": 42.00},
+            {"date": "2025-01-28", "description": "Electric Utility Bill", "amount": 85.00},
+            # February 2025
+            {"date": "2025-02-05", "description": "Chevron Gas", "amount": 50.00},
+            {"date": "2025-02-12", "description": "Amazon - Clothing", "amount": 75.00},
+            {"date": "2025-02-18", "description": "Target - Groceries", "amount": 95.00},
+            {"date": "2025-02-25", "description": "United Airlines", "amount": 350.00},
+            # March 2025
+            {"date": "2025-03-05", "description": "Shell Gas Station", "amount": 48.00},
+            {"date": "2025-03-12", "description": "Restaurant Dinner", "amount": 68.00},
+            {"date": "2025-03-20", "description": "Electric Bill", "amount": 82.00},
+            {"date": "2025-03-28", "description": "Grocery Store", "amount": 110.00},
+            # April 2025
+            {"date": "2025-04-03", "description": "Chevron Gas", "amount": 52.00},
+            {"date": "2025-04-10", "description": "Amazon - Electronics", "amount": 120.00},
+            {"date": "2025-04-18", "description": "Starbucks", "amount": 6.50},
+            {"date": "2025-04-25", "description": "Local Steakhouse", "amount": 85.00},
+            # May 2025
+            {"date": "2025-05-08", "description": "Gas Station", "amount": 55.00},
+            {"date": "2025-05-15", "description": "Walmart - Shopping", "amount": 125.00},
+            {"date": "2025-05-28", "description": "Electric Utility", "amount": 88.00},
+            # June 2025
+            {"date": "2025-06-05", "description": "Shell Gas", "amount": 58.00},
+            {"date": "2025-06-12", "description": "Restaurant", "amount": 72.00},
+            {"date": "2025-06-25", "description": "United Airlines - Vacation", "amount": 420.00},
+            # July 2025
+            {"date": "2025-07-03", "description": "Gas Station", "amount": 62.00},
+            {"date": "2025-07-15", "description": "Amazon - Summer Clothes", "amount": 95.00},
+            {"date": "2025-07-28", "description": "Electric Bill", "amount": 105.00},
+            # August 2025
+            {"date": "2025-08-08", "description": "Chevron Gas", "amount": 60.00},
+            {"date": "2025-08-18", "description": "Target Shopping", "amount": 88.00},
+            {"date": "2025-08-25", "description": "Restaurant Dinner", "amount": 78.00},
+            # September 2025
+            {"date": "2025-09-05", "description": "Gas Station", "amount": 50.00},
+            {"date": "2025-09-15", "description": "Grocery Store", "amount": 102.00},
+            {"date": "2025-09-28", "description": "Electric Utility", "amount": 90.00},
+            # October 2025
+            {"date": "2025-10-05", "description": "Shell Gas", "amount": 48.00},
+            {"date": "2025-10-18", "description": "Amazon - Halloween Decor", "amount": 65.00},
+            {"date": "2025-10-28", "description": "Restaurant", "amount": 55.00},
+            # November 2025
+            {"date": "2025-11-08", "description": "Gas Station", "amount": 52.00},
+            {"date": "2025-11-18", "description": "Grocery Store", "amount": 135.00},
+            {"date": "2025-11-28", "description": "Thanksgiving Dinner Out", "amount": 95.00},
         ],
         "🔥 High Carbon Lifestyle": [
-            {"date": "2024-11-01", "description": "Premium Steakhouse", "amount": 150.00},
-            {"date": "2024-11-02", "description": "Delta Airlines - International", "amount": 1200.00},
-            {"date": "2024-11-03", "description": "Luxury Car Dealership - Gas", "amount": 95.00},
-            {"date": "2024-11-05", "description": "High-end Fashion Store", "amount": 450.00},
-            {"date": "2024-11-07", "description": "Butcher Shop - Prime Beef", "amount": 180.00},
-            {"date": "2024-11-10", "description": "Shell Gas Station", "amount": 85.00},
-            {"date": "2024-11-12", "description": "Amazon - Fast Fashion", "amount": 250.00},
-            {"date": "2024-11-15", "description": "United Airlines - Domestic", "amount": 380.00},
-            {"date": "2024-11-18", "description": "Luxury Restaurant", "amount": 220.00},
+            # January 2025
+            {"date": "2025-01-05", "description": "Premium Steakhouse", "amount": 150.00},
+            {"date": "2025-01-10", "description": "Delta Airlines - International Flight", "amount": 1200.00},
+            {"date": "2025-01-18", "description": "Luxury Car - Gas Fill-up", "amount": 95.00},
+            {"date": "2025-01-25", "description": "High-end Fashion Store", "amount": 450.00},
+            # February 2025
+            {"date": "2025-02-08", "description": "Butcher Shop - Prime Beef", "amount": 180.00},
+            {"date": "2025-02-14", "description": "Fine Dining - Valentine's Day", "amount": 280.00},
+            {"date": "2025-02-20", "description": "Shell Gas Station", "amount": 85.00},
+            {"date": "2025-02-28", "description": "United Airlines - Ski Trip", "amount": 650.00},
+            # March 2025
+            {"date": "2025-03-05", "description": "Luxury Steakhouse", "amount": 220.00},
+            {"date": "2025-03-12", "description": "Amazon - Designer Clothing", "amount": 380.00},
+            {"date": "2025-03-20", "description": "Gas Station - Premium", "amount": 92.00},
+            {"date": "2025-03-28", "description": "Gourmet Butcher", "amount": 165.00},
+            # April 2025
+            {"date": "2025-04-08", "description": "Delta Airlines - Spring Break", "amount": 980.00},
+            {"date": "2025-04-15", "description": "High-end Restaurant", "amount": 195.00},
+            {"date": "2025-04-22", "description": "Luxury Fashion Boutique", "amount": 520.00},
+            {"date": "2025-04-28", "description": "Premium Gas Station", "amount": 88.00},
+            # May 2025
+            {"date": "2025-05-05", "description": "Fine Dining", "amount": 175.00},
+            {"date": "2025-05-12", "description": "United Airlines - Europe Trip", "amount": 1450.00},
+            {"date": "2025-05-20", "description": "Steakhouse Dinner", "amount": 210.00},
+            {"date": "2025-05-28", "description": "Designer Store", "amount": 425.00},
+            # June 2025
+            {"date": "2025-06-08", "description": "Gas Fill-up", "amount": 90.00},
+            {"date": "2025-06-15", "description": "Premium Butcher Shop", "amount": 195.00},
+            {"date": "2025-06-22", "description": "Luxury Restaurant", "amount": 245.00},
+            {"date": "2025-06-28", "description": "Amazon - Fast Fashion Haul", "amount": 350.00},
+            # July 2025
+            {"date": "2025-07-05", "description": "Delta Airlines - Summer Vacation", "amount": 1350.00},
+            {"date": "2025-07-15", "description": "High-end Steakhouse", "amount": 265.00},
+            {"date": "2025-07-22", "description": "Luxury Shopping", "amount": 580.00},
+            {"date": "2025-07-28", "description": "Gas Station", "amount": 95.00},
+            # August 2025
+            {"date": "2025-08-08", "description": "Fine Dining", "amount": 225.00},
+            {"date": "2025-08-15", "description": "United Airlines - Coast Trip", "amount": 720.00},
+            {"date": "2025-08-22", "description": "Premium Meat Market", "amount": 175.00},
+            {"date": "2025-08-28", "description": "Designer Boutique", "amount": 495.00},
+            # September 2025
+            {"date": "2025-09-05", "description": "Gas Station", "amount": 88.00},
+            {"date": "2025-09-12", "description": "Luxury Steakhouse", "amount": 240.00},
+            {"date": "2025-09-20", "description": "Amazon - Electronics", "amount": 420.00},
+            {"date": "2025-09-28", "description": "Gourmet Restaurant", "amount": 195.00},
+            # October 2025
+            {"date": "2025-10-08", "description": "Delta Airlines - Fall Getaway", "amount": 890.00},
+            {"date": "2025-10-15", "description": "High-end Fashion", "amount": 465.00},
+            {"date": "2025-10-22", "description": "Premium Steakhouse", "amount": 215.00},
+            {"date": "2025-10-28", "description": "Gas Fill-up", "amount": 92.00},
+            # November 2025
+            {"date": "2025-11-08", "description": "Fine Dining", "amount": 230.00},
+            {"date": "2025-11-15", "description": "United Airlines - Holiday Trip", "amount": 1100.00},
+            {"date": "2025-11-22", "description": "Luxury Thanksgiving Dinner", "amount": 325.00},
+            {"date": "2025-11-28", "description": "Black Friday - Designer Shopping", "amount": 850.00},
         ]
     }
 

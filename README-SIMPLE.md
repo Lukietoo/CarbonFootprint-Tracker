@@ -94,10 +94,10 @@ Simple keyword-based classification:
 - Environmental equivalents (trees planted, miles not driven, etc.)
 
 ### Multiple Sample Datasets
-Choose from 3 different lifestyle profiles:
-- 🌱 **Eco-Conscious** (Low carbon: ~50 kg CO₂)
-- 🏙️ **Average American** (Medium: ~1,167 kg CO₂)
-- 🔥 **High Carbon** (High: ~3,577 kg CO₂)
+Choose from 3 different lifestyle profiles spanning Jan-Nov 2025:
+- 🌱 **Eco-Conscious** (27 transactions, ~220 kg CO₂) - Plant-based diet, public transit, second-hand shopping
+- 🏙️ **Average American** (38 transactions, ~4,200 kg CO₂) - Mixed diet, car commuting, occasional flights
+- 🔥 **High Carbon** (44 transactions, ~28,000 kg CO₂) - Frequent flying, luxury dining, high consumption
 
 ### Data Persistence
 - Export your data to JSON format

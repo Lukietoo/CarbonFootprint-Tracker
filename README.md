@@ -17,7 +17,7 @@ pip install -r requirements-simple.txt
 ```
 
 See [README-SIMPLE.md](README-SIMPLE.md) for details. The simple version:
-- ✅ Single file (737 lines vs 2,200+)
+- ✅ Single file (854 lines vs 2,200+)
 - ✅ No database setup needed
 - ✅ No API keys required
 - ✅ Only 3 dependencies
@@ -25,7 +25,7 @@ See [README-SIMPLE.md](README-SIMPLE.md) for details. The simple version:
 - ✅ Data export/import to persist across sessions
 - ✅ Carbon budget comparison (US, World, Paris targets)
 - ✅ Enhanced suggestions with specific alternatives
-- ✅ Multiple sample datasets (Low/Medium/High carbon)
+- ✅ Multiple sample datasets spanning 11 months (Jan-Nov 2025)
 
 ---
 
